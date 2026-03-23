@@ -13,23 +13,27 @@ const SignupScreen = ({ navigation }) => {
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const validateForm = () => {
-    if (!userName || !email || !password) {
-      Alert.alert("Error", "All fields are required.");
+    if (!userName.trim() || !email.trim() || !password.trim()) {
+      setErrorMessage("Validation Error. Please fill in all fields.");
       return false;
     }
 
     const emailRegex = /\S+@\S+\.\S+/;
-    if (!emailRegex.test(email)) {
-      Alert.alert("Error", "Please enter a valid email address.");
+    if (!emailRegex.test(email.trim())) {
+      setErrorMessage("Validation Error. Please enter a valid email address.");
       return false;
     }
 
+    setErrorMessage("");
     return true;
   };
 
- const handleRegister = async () => {
+  const handleRegister = async () => {
+    console.log("Register button pressed");
+
     if (!validateForm()) {
       return;
     }
@@ -42,6 +46,7 @@ const SignupScreen = ({ navigation }) => {
 
     try {
       await AsyncStorage.setItem("userDetails", JSON.stringify(userDetails));
+      setErrorMessage("");
       Alert.alert("Success", "Registration successful!", [
         {
           text: "OK",
@@ -49,7 +54,7 @@ const SignupScreen = ({ navigation }) => {
         },
       ]);
     } catch (error) {
-      Alert.alert("Error", "Failed to save user details.");
+      setErrorMessage("Error. Failed to save user details.");
     }
   };
 
@@ -83,6 +88,8 @@ const SignupScreen = ({ navigation }) => {
         value={password}
         onChangeText={setPassword}
       />
+
+      {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
 
       <TouchableOpacity style={styles.button} onPress={handleRegister}>
         <Text style={styles.buttonText}>Sign Up</Text>
@@ -122,6 +129,12 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     fontSize: 16,
     backgroundColor: "#f9f9f9",
+  },
+  errorText: {
+    color: "red",
+    fontSize: 14,
+    marginBottom: 10,
+    textAlign: "center",
   },
   button: {
     backgroundColor: "#4CAF50",
