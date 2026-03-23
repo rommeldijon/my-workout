@@ -29,7 +29,7 @@ const SignupScreen = ({ navigation }) => {
     return true;
   };
 
- const handleSignup = async () => {
+ const handleRegister = async () => {
     if (!validateForm()) {
       return;
     }
@@ -84,7 +84,7 @@ const SignupScreen = ({ navigation }) => {
         onChangeText={setPassword}
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleSignup}>
+      <TouchableOpacity style={styles.button} onPress={handleRegister}>
         <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
 
