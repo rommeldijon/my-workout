@@ -12,19 +12,21 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const validateForm = () => {
-    if (!email || !password) {
-      Alert.alert("Error", "Email and password are required.");
+    if (!email.trim() || !password.trim()) {
+      setErrorMessage("Validation Error. Email and password are required.");
       return false;
     }
 
     const emailRegex = /\S+@\S+\.\S+/;
-    if (!emailRegex.test(email)) {
-      Alert.alert("Error", "Please enter a valid email address.");
+    if (!emailRegex.test(email.trim())) {
+      setErrorMessage("Validation Error. Please enter a valid email address.");
       return false;
     }
 
+    setErrorMessage("");
     return true;
   };
 
@@ -33,19 +35,23 @@ const LoginScreen = ({ navigation }) => {
       const storedUser = await AsyncStorage.getItem("userDetails");
 
       if (!storedUser) {
-        Alert.alert("Error", "No user found. Please sign up first.");
+        setErrorMessage("Error. No user found. Please sign up first.");
         return;
       }
 
       const parsedUser = JSON.parse(storedUser);
 
-      if (email === parsedUser.email && password === parsedUser.password) {
+      if (
+        email.trim() === parsedUser.email &&
+        password.trim() === parsedUser.password
+      ) {
+        setErrorMessage("");
         Alert.alert("Success", "Login successful!");
       } else {
-        Alert.alert("Error", "Invalid email or password.");
+        setErrorMessage("Error. Invalid email or password.");
       }
     } catch (error) {
-      Alert.alert("Error", "Something went wrong.");
+      setErrorMessage("Error. Something went wrong.");
     }
   };
 
@@ -77,6 +83,8 @@ const LoginScreen = ({ navigation }) => {
         onChangeText={setPassword}
         secureTextEntry
       />
+
+      {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
 
       <TouchableOpacity style={styles.button} onPress={handleLoginPress}>
         <Text style={styles.buttonText}>Login</Text>
@@ -116,6 +124,12 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     fontSize: 16,
     backgroundColor: "#f9f9f9",
+  },
+  errorText: {
+    color: "red",
+    fontSize: 14,
+    marginBottom: 10,
+    textAlign: "center",
   },
   button: {
     backgroundColor: "#2196F3",
