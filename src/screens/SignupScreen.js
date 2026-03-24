@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  Platform,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -13,21 +14,28 @@ const SignupScreen = ({ navigation }) => {
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+
+  const showAlert = (title, message, onOk) => {
+    if (Platform.OS === "web") {
+      window.alert(`${title}\n\n${message}`);
+      if (onOk) onOk();
+    } else {
+      Alert.alert(title, message, onOk ? [{ text: "OK", onPress: onOk }] : undefined);
+    }
+  };
 
   const validateForm = () => {
     if (!userName.trim() || !email.trim() || !password.trim()) {
-      setErrorMessage("Validation Error. Please fill in all fields.");
+      showAlert("Validation Error", "Please fill in all fields.");
       return false;
     }
 
     const emailRegex = /\S+@\S+\.\S+/;
     if (!emailRegex.test(email.trim())) {
-      setErrorMessage("Validation Error. Please enter a valid email address.");
+      showAlert("Validation Error", "Please enter a valid email address.");
       return false;
     }
 
-    setErrorMessage("");
     return true;
   };
 
@@ -39,24 +47,22 @@ const SignupScreen = ({ navigation }) => {
     }
 
     const userDetails = {
-      userName,
-      email,
-      password,
+      userName: userName.trim(),
+      email: email.trim(),
+      password: password.trim(),
     };
 
     try {
       await AsyncStorage.setItem("userDetails", JSON.stringify(userDetails));
       const savedData = await AsyncStorage.getItem("userDetails");
       console.log("Saved User:", savedData);
-      setErrorMessage("");
-      Alert.alert("Success", "Registration successful!", [
-        {
-          text: "OK",
-          onPress: () => navigation.navigate("Login"),
-        },
-      ]);
+
+      showAlert("Success", "Registration successful!", () => {
+        navigation.navigate("Login");
+      });
     } catch (error) {
-      setErrorMessage("Error. Failed to save user details.");
+      console.log("Signup storage error:", error);
+      showAlert("Error", "Failed to save user details.");
     }
   };
 
@@ -90,8 +96,6 @@ const SignupScreen = ({ navigation }) => {
         value={password}
         onChangeText={setPassword}
       />
-
-      {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
 
       <TouchableOpacity style={styles.button} onPress={handleRegister}>
         <Text style={styles.buttonText}>Sign Up</Text>
@@ -131,12 +135,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     fontSize: 16,
     backgroundColor: "#f9f9f9",
-  },
-  errorText: {
-    color: "red",
-    fontSize: 14,
-    marginBottom: 10,
-    textAlign: "center",
   },
   button: {
     backgroundColor: "#4CAF50",

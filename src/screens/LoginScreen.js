@@ -6,36 +6,50 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  Platform,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+
+  // ✅ Helper function for cross-platform alerts
+  const showAlert = (title, message, onOk) => {
+    if (Platform.OS === "web") {
+      window.alert(`${title}\n\n${message}`);
+      if (onOk) onOk();
+    } else {
+      Alert.alert(
+        title,
+        message,
+        onOk ? [{ text: "OK", onPress: onOk }] : undefined
+      );
+    }
+  };
 
   const validateForm = () => {
     if (!email.trim() || !password.trim()) {
-      setErrorMessage("Validation Error. Email and password are required.");
+      showAlert("Validation Error", "Email and password are required.");
       return false;
     }
 
     const emailRegex = /\S+@\S+\.\S+/;
     if (!emailRegex.test(email.trim())) {
-      setErrorMessage("Validation Error. Please enter a valid email address.");
+      showAlert("Validation Error", "Please enter a valid email address.");
       return false;
     }
 
-    setErrorMessage("");
     return true;
   };
 
   const handleLogin = async () => {
     try {
       const storedUser = await AsyncStorage.getItem("userDetails");
+      console.log("Stored User:", storedUser);
 
       if (!storedUser) {
-        setErrorMessage("Error. No user found. Please sign up first.");
+        showAlert("Error", "No user found. Please sign up first.");
         return;
       }
 
@@ -47,18 +61,13 @@ const LoginScreen = ({ navigation }) => {
       ) {
         await AsyncStorage.setItem("loggedInUser", parsedUser.email);
 
-        setErrorMessage("");
-        Alert.alert("Success", "Login successful!", [
-          {
-            text: "OK",
-            onPress: () => navigation.navigate("Home"),
-          },
-        ]);
+        showAlert("Success", "Login successful!");
       } else {
-        setErrorMessage("Error. Invalid email or password.");
+        showAlert("Error", "Invalid email or password.");
       }
     } catch (error) {
-      setErrorMessage("Error. Something went wrong.");
+      console.log("Login error:", error);
+      showAlert("Error", "Something went wrong.");
     }
   };
 
@@ -90,8 +99,6 @@ const LoginScreen = ({ navigation }) => {
         onChangeText={setPassword}
         secureTextEntry
       />
-
-      {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
 
       <TouchableOpacity style={styles.button} onPress={handleLoginPress}>
         <Text style={styles.buttonText}>Login</Text>
@@ -131,12 +138,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     fontSize: 16,
     backgroundColor: "#f9f9f9",
-  },
-  errorText: {
-    color: "red",
-    fontSize: 14,
-    marginBottom: 10,
-    textAlign: "center",
   },
   button: {
     backgroundColor: "#2196F3",
