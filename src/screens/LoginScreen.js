@@ -45,8 +45,15 @@ const LoginScreen = ({ navigation }) => {
         email.trim() === parsedUser.email &&
         password.trim() === parsedUser.password
       ) {
+        await AsyncStorage.setItem("loggedInUser", parsedUser.email);
+
         setErrorMessage("");
-        Alert.alert("Success", "Login successful!");
+        Alert.alert("Success", "Login successful!", [
+          {
+            text: "OK",
+            onPress: () => navigation.navigate("Home"),
+          },
+        ]);
       } else {
         setErrorMessage("Error. Invalid email or password.");
       }

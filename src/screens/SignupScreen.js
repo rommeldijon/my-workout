@@ -46,6 +46,8 @@ const SignupScreen = ({ navigation }) => {
 
     try {
       await AsyncStorage.setItem("userDetails", JSON.stringify(userDetails));
+      const savedData = await AsyncStorage.getItem("userDetails");
+      console.log("Saved User:", savedData);
       setErrorMessage("");
       Alert.alert("Success", "Registration successful!", [
         {
