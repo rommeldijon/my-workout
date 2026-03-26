@@ -115,7 +115,7 @@ const HomeScreen = ({ navigation }) => {
   };
 
   const handleAddWorkout = () => {
-    showAlert("Add Exercise", "Add exercise screen coming soon.");
+    navigation.navigate("AddWorkout");
   };
 
   const handleWorkoutPress = (workout) => {
@@ -123,10 +123,10 @@ const HomeScreen = ({ navigation }) => {
   };
 
   const todoWorkouts = workouts.filter((item) => !item.completed);
-  const doneWorkouts = workouts.filter((item) => item.completed);
   const quickWarmUps = workouts.filter(
     (item) => item.category === "Quick Warm-ups"
   );
+  const doneWorkouts = workouts.filter((item) => item.completed);
 
   return (
     <View style={styles.container}>
@@ -242,7 +242,7 @@ const HomeScreen = ({ navigation }) => {
             ))
           ) : (
             <Text style={styles.emptySectionText}>
-              No completed exercises yet. Swipe right behavior can be added later.
+              No completed exercises yet.
             </Text>
           )}
         </View>
