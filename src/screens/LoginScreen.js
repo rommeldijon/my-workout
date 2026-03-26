@@ -14,7 +14,6 @@ const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // ✅ Helper function for cross-platform alerts
   const showAlert = (title, message, onOk) => {
     if (Platform.OS === "web") {
       window.alert(`${title}\n\n${message}`);
@@ -61,7 +60,9 @@ const LoginScreen = ({ navigation }) => {
       ) {
         await AsyncStorage.setItem("loggedInUser", parsedUser.email);
 
-        showAlert("Success", "Login successful!");
+        showAlert("Success", "Login successful!", () => {
+          navigation.replace("Home");
+        });
       } else {
         showAlert("Error", "Invalid email or password.");
       }
