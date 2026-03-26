@@ -119,13 +119,7 @@ const HomeScreen = ({ navigation }) => {
   };
 
   const handleWorkoutPress = (workout) => {
-    showAlert(
-      "Selected Exercise",
-      `You selected: ${workout.title}\n\nLater, this can navigate using workoutId: ${workout.id}`
-    );
-
-    // Later, use:
-    // navigation.navigate("WorkoutDetail", { workoutId: workout.id });
+    navigation.navigate("WorkoutDetail", { item: workout });
   };
 
   const todoWorkouts = workouts.filter((item) => !item.completed);
@@ -136,7 +130,6 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* Top Navigation Bar */}
       <View style={styles.topBar}>
         <TouchableOpacity style={styles.iconButton} onPress={handleMenuPress}>
           <Text style={styles.iconText}>☰</Text>
@@ -156,7 +149,6 @@ const HomeScreen = ({ navigation }) => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Welcome Section */}
         <View style={styles.welcomeCard}>
           <Text style={styles.greeting}>Hello {userName}!</Text>
           <Text style={styles.subheading}>
@@ -164,7 +156,6 @@ const HomeScreen = ({ navigation }) => {
           </Text>
         </View>
 
-        {/* Primary Actions */}
         <View style={styles.actionButtonsContainer}>
           <TouchableOpacity style={styles.primaryButton} onPress={handleStartWorkout}>
             <Text style={styles.primaryButtonText}>Start Workout</Text>
@@ -179,7 +170,6 @@ const HomeScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        {/* Instruction / Placeholder */}
         {workouts.length === 0 && !loading && (
           <View style={styles.placeholderCard}>
             <Text style={styles.placeholderText}>
@@ -188,7 +178,6 @@ const HomeScreen = ({ navigation }) => {
           </View>
         )}
 
-        {/* To Do / Exercises Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>To Do / Exercises</Text>
 
@@ -210,7 +199,6 @@ const HomeScreen = ({ navigation }) => {
           )}
         </View>
 
-        {/* Quick Warm-ups Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Quick Warm-ups</Text>
 
@@ -238,7 +226,6 @@ const HomeScreen = ({ navigation }) => {
           )}
         </View>
 
-        {/* Done Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Done</Text>
 
@@ -261,7 +248,6 @@ const HomeScreen = ({ navigation }) => {
         </View>
       </ScrollView>
 
-      {/* Floating Action Button */}
       <TouchableOpacity style={styles.fab} onPress={handleAddWorkout}>
         <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>
