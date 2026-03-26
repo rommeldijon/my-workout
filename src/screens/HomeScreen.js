@@ -103,7 +103,7 @@ const HomeScreen = ({ navigation }) => {
   };
 
   const handleViewWorkouts = () => {
-    showAlert("View Workouts", "Workout list screen coming soon.");
+  navigation.navigate("ViewWorkouts");
   };
 
   const handleMenuPress = () => {
