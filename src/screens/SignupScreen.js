@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Alert,
   Platform,
+  Image,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -68,6 +69,10 @@ const SignupScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <Image
+        source={require("../../assets/logo.png")}
+        style={styles.logo}
+      />
       <Text style={styles.title}>Create Account</Text>
 
       <TextInput
@@ -161,5 +166,12 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "blue",
     fontWeight: "bold",
+  },
+  logo: {
+  width: 100,
+  height: 100,
+  resizeMode: "contain",
+  alignSelf: "center",
+  marginBottom: 20,
   },
 });

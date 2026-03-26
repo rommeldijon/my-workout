@@ -7,6 +7,7 @@ import {
   ScrollView,
   Alert,
   Platform,
+  Image,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
@@ -130,6 +131,10 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+       <Image
+         source={require("../../assets/logo.png")}
+         style={styles.logo}
+       />
       <View style={styles.topBar}>
         <TouchableOpacity style={styles.iconButton} onPress={handleMenuPress}>
           <Text style={styles.iconText}>☰</Text>
@@ -420,5 +425,12 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     marginTop: -2,
+  },
+  logo: {
+  width: 100,
+  height: 100,
+  resizeMode: "contain",
+  alignSelf: "center",
+  marginBottom: 20,
   },
 });
