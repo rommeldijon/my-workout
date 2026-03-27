@@ -30,6 +30,13 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
+  const exerciseImages = {
+    pushup: require("../../assets/exercises/push_ups.png"),
+    squat: require("../../assets/exercises/squat.png"),
+    jumpingjacks: require("../../assets/exercises/jumping_jacks.png"),
+    plank: require("../../assets/exercises/plank_on_elbows.png"),
+  };
+
   const defaultWorkouts = [
     {
       id: "1",
@@ -37,6 +44,7 @@ const HomeScreen = ({ navigation }) => {
       description: "3 sets of 10 reps",
       category: "Exercises",
       completed: false,
+      imageKey: "pushup"
     },
     {
       id: "2",
@@ -44,6 +52,7 @@ const HomeScreen = ({ navigation }) => {
       description: "2 minutes warm-up",
       category: "Quick Warm-ups",
       completed: false,
+      imageKey: "jumpingjacks"
     },
     {
       id: "3",
@@ -51,6 +60,7 @@ const HomeScreen = ({ navigation }) => {
       description: "3 sets of 12 reps",
       category: "Exercises",
       completed: true,
+      imageKey: "squat"
     },
   ];
 
@@ -104,23 +114,23 @@ const HomeScreen = ({ navigation }) => {
   };
 
   const handleViewWorkouts = () => {
-  navigation.navigate("ViewWorkouts");
+     navigation.navigate("ViewWorkouts");
   };
 
   const handleMenuPress = () => {
-    showAlert("Menu", "Drawer menu coming soon.");
+     navigation.openDrawer();
   };
 
   const handleSettingsPress = () => {
-    showAlert("Settings", "Settings screen coming soon.");
+     navigation.navigate("Settings");
   };
 
   const handleAddWorkout = () => {
-    navigation.navigate("AddWorkout");
+     navigation.navigate("AddWorkout");
   };
 
   const handleWorkoutPress = (workout) => {
-    navigation.navigate("WorkoutDetail", { item: workout });
+     navigation.navigate("WorkoutDetail", { item: workout });
   };
 
   const todoWorkouts = workouts.filter((item) => !item.completed);
@@ -131,10 +141,6 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-       <Image
-         source={require("../../assets/logo.png")}
-         style={styles.logo}
-       />
       <View style={styles.topBar}>
         <TouchableOpacity style={styles.iconButton} onPress={handleMenuPress}>
           <Text style={styles.iconText}>☰</Text>
@@ -155,7 +161,13 @@ const HomeScreen = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.welcomeCard}>
+          <Image
+            source={require("../../assets/logo.png")}
+            style={styles.logo}
+          />
+
           <Text style={styles.greeting}>Hello {userName}!</Text>
+
           <Text style={styles.subheading}>
             Use the + button to add or select your next exercise!
           </Text>
@@ -193,6 +205,13 @@ const HomeScreen = ({ navigation }) => {
                 style={styles.workoutCard}
                 onPress={() => handleWorkoutPress(item)}
               >
+                {item.imageKey && exerciseImages[item.imageKey] ? (
+                  <Image
+                    source={exerciseImages[item.imageKey]}
+                    style={styles.workoutImage}
+                  />
+                ) : null}
+
                 <Text style={styles.workoutTitle}>{item.title}</Text>
                 <Text style={styles.workoutDescription}>{item.description}</Text>
               </TouchableOpacity>
@@ -219,6 +238,13 @@ const HomeScreen = ({ navigation }) => {
                   style={styles.horizontalWorkoutCard}
                   onPress={() => handleWorkoutPress(item)}
                 >
+                {item.imageKey && exerciseImages[item.imageKey] ? (
+                  <Image
+                    source={exerciseImages[item.imageKey]}
+                    style={styles.horizontalWorkoutImage}
+                  />
+                ) : null}
+
                   <Text style={styles.workoutTitle}>{item.title}</Text>
                   <Text style={styles.workoutDescription}>{item.description}</Text>
                 </TouchableOpacity>
@@ -241,6 +267,13 @@ const HomeScreen = ({ navigation }) => {
                 style={styles.doneWorkoutCard}
                 onPress={() => handleWorkoutPress(item)}
               >
+                {item.imageKey && exerciseImages[item.imageKey] ? (
+                  <Image
+                    source={exerciseImages[item.imageKey]}
+                    style={styles.workoutImage}
+                  />
+                ) : null}
+
                 <Text style={styles.workoutTitle}>{item.title}</Text>
                 <Text style={styles.workoutDescription}>{item.description}</Text>
               </TouchableOpacity>
@@ -307,6 +340,7 @@ const styles = StyleSheet.create({
     padding: 18,
     marginBottom: 18,
     elevation: 2,
+    alignItems: "center",
   },
   greeting: {
     fontSize: 24,
@@ -426,11 +460,31 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginTop: -2,
   },
-  logo: {
-  width: 100,
-  height: 100,
-  resizeMode: "contain",
-  alignSelf: "center",
-  marginBottom: 20,
+  logoContainer: {
+    alignItems: "center",
+    paddingVertical: 15,
+    backgroundColor: "#F4F7FB",
   },
+  logo: {
+    width: 80,
+    height: 80,
+    resizeMode: "contain",
+    alignSelf: "center",
+    marginBottom: 10,
+  },
+  workoutImage: {
+  width: "100%",
+  height: 140,
+  borderRadius: 10,
+  marginBottom: 10,
+  resizeMode: "cover",
+},
+
+horizontalWorkoutImage: {
+  width: "100%",
+  height: 100,
+  borderRadius: 10,
+  marginBottom: 8,
+  resizeMode: "cover",
+},
 });

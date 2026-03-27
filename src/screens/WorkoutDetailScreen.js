@@ -5,7 +5,15 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Image,
 } from "react-native";
+
+const exerciseImages = {
+  pushup: require("../../assets/exercises/push_ups.png"),
+  squat: require("../../assets/exercises/squat.png"),
+  jumpingjacks: require("../../assets/exercises/jumping_jacks.png"),
+  plank: require("../../assets/exercises/plank_on_elbows.png"),
+};
 
 const WorkoutDetailScreen = ({ route, navigation }) => {
   const { item } = route.params || {};
@@ -15,6 +23,13 @@ const WorkoutDetailScreen = ({ route, navigation }) => {
       <Text style={styles.header}>Workout Details</Text>
 
       <View style={styles.card}>
+        {item?.imageKey && exerciseImages[item.imageKey] ? (
+          <Image
+            source={exerciseImages[item.imageKey]}
+            style={styles.image}
+          />
+        ) : null}
+
         <Text style={styles.label}>Title</Text>
         <Text style={styles.value}>{item?.title || "No title available"}</Text>
 
@@ -90,5 +105,12 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 17,
     fontWeight: "bold",
+  },
+  image: {
+    width: "100%",
+    height: 200,
+    borderRadius: 12,
+    marginBottom: 15,
+    resizeMode: "cover",
   },
 });

@@ -7,6 +7,7 @@ import {
   ScrollView,
   Alert,
   Platform,
+  Image
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
@@ -26,6 +27,13 @@ const ViewWorkoutsScreen = ({ navigation }) => {
         onOk ? [{ text: "OK", onPress: onOk }] : undefined
       );
     }
+  };
+
+  const exerciseImages = {
+    pushup: require("../../assets/exercises/push_ups.png"),
+    squat: require("../../assets/exercises/squat.png"),
+    jumpingjacks: require("../../assets/exercises/jumping_jacks.png"),
+    plank: require("../../assets/exercises/plank_on_elbows.png"),
   };
 
   const loadWorkouts = async () => {
@@ -78,6 +86,13 @@ const ViewWorkoutsScreen = ({ navigation }) => {
               style={styles.workoutCard}
               onPress={() => handleWorkoutPress(item)}
             >
+              {item.imageKey && exerciseImages[item.imageKey] ? (
+                <Image
+                  source={exerciseImages[item.imageKey]}
+                  style={styles.workoutImage}
+                />
+              ) : null}
+
               <Text style={styles.workoutTitle}>{item.title}</Text>
               <Text style={styles.workoutDescription}>{item.description}</Text>
               <Text style={styles.workoutMeta}>
