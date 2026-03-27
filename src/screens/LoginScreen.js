@@ -62,7 +62,7 @@ const LoginScreen = ({ navigation }) => {
         await AsyncStorage.setItem("loggedInUser", parsedUser.email);
 
         showAlert("Success", "Login successful!", () => {
-          navigation.replace("Home");
+          navigation.replace("Main");
         });
       } else {
         showAlert("Error", "Invalid email or password.");
@@ -82,9 +82,10 @@ const LoginScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Image
-      source={require("../../assets/logo.png")}
-      style={styles.logo}
+        source={require("../../assets/logo.png")}
+        style={styles.logo}
       />
+
       <Text style={styles.title}>Login</Text>
 
       <TextInput
@@ -129,6 +130,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "#fff",
   },
+  logo: {
+    width: 100,
+    height: 100,
+    resizeMode: "contain",
+    alignSelf: "center",
+    marginBottom: 20,
+  },
   title: {
     fontSize: 28,
     fontWeight: "bold",
@@ -170,12 +178,5 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "blue",
     fontWeight: "bold",
-  },
-  logo: {
-  width: 100,
-  height: 100,
-  resizeMode: "contain",
-  alignSelf: "center",
-  marginBottom: 20,
   },
 });
