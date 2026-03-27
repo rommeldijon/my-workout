@@ -8,6 +8,7 @@ import HomeScreen from "./src/screens/HomeScreen";
 import WorkoutDetailScreen from "./src/screens/WorkoutDetailScreen";
 import AddWorkoutScreen from "./src/screens/AddWorkoutScreen";
 import ViewWorkoutsScreen from "./src/screens/ViewWorkoutsScreen";
+import SettingsScreen from "./src/screens/SettingsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -50,6 +51,12 @@ export default function App() {
           component={ViewWorkoutsScreen}
           options={{ title: "View Workouts" }}
         />
+
+        <Stack.Screen 
+          name="Settings" 
+          component={SettingsScreen} 
+        />
+
       </Stack.Navigator>
     </NavigationContainer>
   );
