@@ -175,6 +175,13 @@ const styles = StyleSheet.create({
     color: "#666",
     marginBottom: 2,
   },
+  workoutImage: {
+    width: "100%",
+    height: 180,
+    borderRadius: 10,
+    marginBottom: 12,
+    resizeMode: "cover",
+  },
   backButton: {
     backgroundColor: "#2196F3",
     paddingVertical: 14,
