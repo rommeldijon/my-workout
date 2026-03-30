@@ -62,7 +62,17 @@ const LoginScreen = ({ navigation }) => {
         await AsyncStorage.setItem("loggedInUser", parsedUser.email);
 
         showAlert("Success", "Login successful!", () => {
-          navigation.replace("Home");
+          navigation.reset({
+            index: 0,
+            routes: [
+              {
+                name: "Main",
+                state: {
+                  routes: [{ name: "Home" }],
+                },
+              },
+            ],
+          });
         });
       } else {
         showAlert("Error", "Invalid email or password.");

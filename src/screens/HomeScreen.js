@@ -12,8 +12,53 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 
+const getImageKeyFromTitle = (title = "") => {
+  const normalizedTitle = title.toLowerCase().trim();
+
+  if (normalizedTitle.includes("push")) return "pushup";
+  if (normalizedTitle.includes("squat")) return "squat";
+  if (normalizedTitle.includes("jump")) return "jumpingjacks";
+  if (normalizedTitle.includes("plank")) return "plank";
+
+  return null;
+};
+
+const exerciseImages = {
+  pushup: require("../../assets/exercises/push_ups.png"),
+  squat: require("../../assets/exercises/squat.png"),
+  jumpingjacks: require("../../assets/exercises/jumping_jacks.png"),
+  plank: require("../../assets/exercises/plank_on_elbows.png"),
+};
+
+const defaultWorkouts = [
+  {
+    id: "1",
+    title: "Push Ups",
+    description: "3 sets of 10 reps",
+    category: "Exercises",
+    completed: false,
+    imageKey: "pushup",
+  },
+  {
+    id: "2",
+    title: "Jumping Jacks",
+    description: "2 minutes warm-up",
+    category: "Quick Warm-ups",
+    completed: false,
+    imageKey: "jumpingjacks",
+  },
+  {
+    id: "3",
+    title: "Bodyweight Squats",
+    description: "3 sets of 12 reps",
+    category: "Exercises",
+    completed: true,
+    imageKey: "squat",
+  },
+];
+
 const HomeScreen = ({ navigation }) => {
-  const [userName, setUserName] = useState("");
+  const [userName, setUserName] = useState("User");
   const [workouts, setWorkouts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -30,50 +75,17 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
-  const exerciseImages = {
-    pushup: require("../../assets/exercises/push_ups.png"),
-    squat: require("../../assets/exercises/squat.png"),
-    jumpingjacks: require("../../assets/exercises/jumping_jacks.png"),
-    plank: require("../../assets/exercises/plank_on_elbows.png"),
-  };
-
-  const defaultWorkouts = [
-    {
-      id: "1",
-      title: "Push Ups",
-      description: "3 sets of 10 reps",
-      category: "Exercises",
-      completed: false,
-      imageKey: "pushup"
-    },
-    {
-      id: "2",
-      title: "Jumping Jacks",
-      description: "2 minutes warm-up",
-      category: "Quick Warm-ups",
-      completed: false,
-      imageKey: "jumpingjacks"
-    },
-    {
-      id: "3",
-      title: "Bodyweight Squats",
-      description: "3 sets of 12 reps",
-      category: "Exercises",
-      completed: true,
-      imageKey: "squat"
-    },
-  ];
-
   const loadHomeData = async () => {
     try {
       setLoading(true);
+      console.log("HomeScreen: loading data");
 
       const storedUser = await AsyncStorage.getItem("userDetails");
       const storedWorkouts = await AsyncStorage.getItem("workouts");
 
       if (storedUser) {
         const parsedUser = JSON.parse(storedUser);
-        setUserName(parsedUser.userName || "User");
+        setUserName(parsedUser?.userName || "User");
       } else {
         setUserName("User");
       }
@@ -83,7 +95,16 @@ const HomeScreen = ({ navigation }) => {
         setWorkouts(defaultWorkouts);
       } else {
         const parsedWorkouts = JSON.parse(storedWorkouts);
-        setWorkouts(Array.isArray(parsedWorkouts) ? parsedWorkouts : []);
+
+        const normalizedWorkouts = Array.isArray(parsedWorkouts)
+          ? parsedWorkouts.map((item) => ({
+              ...item,
+              imageKey: item.imageKey || getImageKeyFromTitle(item.title),
+            }))
+          : [];
+
+        await AsyncStorage.setItem("workouts", JSON.stringify(normalizedWorkouts));
+        setWorkouts(normalizedWorkouts);
       }
     } catch (error) {
       console.log("Error loading home data:", error);
@@ -114,25 +135,27 @@ const HomeScreen = ({ navigation }) => {
   };
 
   const handleViewWorkouts = () => {
-     navigation.navigate("ViewWorkouts");
+    navigation.navigate("ViewWorkouts");
   };
 
   const handleMenuPress = () => {
-     navigation.openDrawer();
+    navigation.openDrawer();
   };
 
   const handleSettingsPress = () => {
-     navigation.navigate("Settings");
+    navigation.navigate("Settings");
   };
 
   const handleAddWorkout = () => {
-     navigation.navigate("AddWorkout");
+    navigation.navigate("AddWorkout");
   };
 
   const handleWorkoutPress = (workout) => {
-     navigation.navigate("WorkoutDetail", { item: workout });
+    navigation.navigate("WorkoutDetail", { item: workout });
   };
-
+   
+  console.log("Loaded workouts:", workouts);
+  
   const todoWorkouts = workouts.filter((item) => !item.completed);
   const quickWarmUps = workouts.filter(
     (item) => item.category === "Quick Warm-ups"
@@ -150,7 +173,10 @@ const HomeScreen = ({ navigation }) => {
           {loading ? "Loading..." : "Enter or Select your next exercise"}
         </Text>
 
-        <TouchableOpacity style={styles.iconButton} onPress={handleSettingsPress}>
+        <TouchableOpacity
+          style={styles.iconButton}
+          onPress={handleSettingsPress}
+        >
           <Text style={styles.iconText}>⚙</Text>
         </TouchableOpacity>
       </View>
@@ -161,24 +187,25 @@ const HomeScreen = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.welcomeCard}>
-          <Image
-            source={require("../../assets/logo.png")}
-            style={styles.logo}
-          />
-
+          <Image source={require("../../assets/logo.png")} style={styles.logo} />
           <Text style={styles.greeting}>Hello {userName}!</Text>
-
           <Text style={styles.subheading}>
             Use the + button to add or select your next exercise!
           </Text>
         </View>
 
         <View style={styles.actionButtonsContainer}>
-          <TouchableOpacity style={styles.primaryButton} onPress={handleStartWorkout}>
+          <TouchableOpacity
+            style={styles.primaryButton}
+            onPress={handleStartWorkout}
+          >
             <Text style={styles.primaryButtonText}>Start Workout</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.primaryButton} onPress={handleViewWorkouts}>
+          <TouchableOpacity
+            style={styles.primaryButton}
+            onPress={handleViewWorkouts}
+          >
             <Text style={styles.primaryButtonText}>View Workouts</Text>
           </TouchableOpacity>
 
@@ -205,12 +232,12 @@ const HomeScreen = ({ navigation }) => {
                 style={styles.workoutCard}
                 onPress={() => handleWorkoutPress(item)}
               >
-                {item.imageKey && exerciseImages[item.imageKey] ? (
+                {item.imageKey && exerciseImages[item.imageKey] && (
                   <Image
                     source={exerciseImages[item.imageKey]}
                     style={styles.workoutImage}
                   />
-                ) : null}
+                )}
 
                 <Text style={styles.workoutTitle}>{item.title}</Text>
                 <Text style={styles.workoutDescription}>{item.description}</Text>
@@ -238,12 +265,12 @@ const HomeScreen = ({ navigation }) => {
                   style={styles.horizontalWorkoutCard}
                   onPress={() => handleWorkoutPress(item)}
                 >
-                {item.imageKey && exerciseImages[item.imageKey] ? (
-                  <Image
-                    source={exerciseImages[item.imageKey]}
-                    style={styles.horizontalWorkoutImage}
-                  />
-                ) : null}
+                  {item.imageKey && exerciseImages[item.imageKey] && (
+                    <Image
+                      source={exerciseImages[item.imageKey]}
+                      style={styles.horizontalWorkoutImage}
+                    />
+                  )}
 
                   <Text style={styles.workoutTitle}>{item.title}</Text>
                   <Text style={styles.workoutDescription}>{item.description}</Text>
@@ -267,12 +294,12 @@ const HomeScreen = ({ navigation }) => {
                 style={styles.doneWorkoutCard}
                 onPress={() => handleWorkoutPress(item)}
               >
-                {item.imageKey && exerciseImages[item.imageKey] ? (
+                {item.imageKey && exerciseImages[item.imageKey] && (
                   <Image
                     source={exerciseImages[item.imageKey]}
                     style={styles.workoutImage}
                   />
-                ) : null}
+                )}
 
                 <Text style={styles.workoutTitle}>{item.title}</Text>
                 <Text style={styles.workoutDescription}>{item.description}</Text>
@@ -352,6 +379,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#555",
     lineHeight: 22,
+    textAlign: "center",
   },
   actionButtonsContainer: {
     marginBottom: 20,
@@ -460,11 +488,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginTop: -2,
   },
-  logoContainer: {
-    alignItems: "center",
-    paddingVertical: 15,
-    backgroundColor: "#F4F7FB",
-  },
   logo: {
     width: 80,
     height: 80,
@@ -473,18 +496,17 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   workoutImage: {
-  width: "100%",
-  height: 140,
-  borderRadius: 10,
-  marginBottom: 10,
-  resizeMode: "cover",
-},
-
-horizontalWorkoutImage: {
-  width: "100%",
-  height: 100,
-  borderRadius: 10,
-  marginBottom: 8,
-  resizeMode: "cover",
-},
+    width: "100%",
+    height: 140,
+    borderRadius: 10,
+    marginBottom: 10,
+    resizeMode: "cover",
+  },
+  horizontalWorkoutImage: {
+    width: "100%",
+    height: 100,
+    borderRadius: 10,
+    marginBottom: 8,
+    resizeMode: "cover",
+  },
 });

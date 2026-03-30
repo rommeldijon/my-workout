@@ -1,4 +1,6 @@
+import "react-native-gesture-handler";
 import React from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
@@ -15,6 +17,8 @@ const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
 function DrawerNavigator() {
+  console.log("DrawerNavigator loaded");
+  
   return (
     <Drawer.Navigator initialRouteName="Home">
       <Drawer.Screen
@@ -22,19 +26,16 @@ function DrawerNavigator() {
         component={HomeScreen}
         options={{ title: "Home" }}
       />
-
       <Drawer.Screen
         name="AddWorkout"
         component={AddWorkoutScreen}
         options={{ title: "Add Workout" }}
       />
-
       <Drawer.Screen
         name="ViewWorkouts"
         component={ViewWorkoutsScreen}
         options={{ title: "View Workouts" }}
       />
-
       <Drawer.Screen
         name="Settings"
         component={SettingsScreen}
@@ -46,33 +47,34 @@ function DrawerNavigator() {
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
-        <Stack.Screen
-          name="Login"
-          component={LoginScreen}
-          options={{ headerShown: false }}
-        />
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Login">
+          <Stack.Screen
+            name="Login"
+            component={LoginScreen}
+            options={{ headerShown: false }}
+          />
 
-        <Stack.Screen
-          name="Signup"
-          component={SignupScreen}
-          options={{ headerShown: false }}
-        />
+          <Stack.Screen
+            name="Signup"
+            component={SignupScreen}
+            options={{ headerShown: false }}
+          />
 
-        <Stack.Screen
-          name="Main"
-          component={DrawerNavigator}
-          options={{ headerShown: false }}
-        />
+          <Stack.Screen
+            name="Main"
+            component={DrawerNavigator}
+            options={{ headerShown: false }}
+          />
 
-        <Stack.Screen
-          name="WorkoutDetail"
-          component={WorkoutDetailScreen}
-          options={{ title: "Workout Detail", headerShown: true}}
-        />
-        
-      </Stack.Navigator>
-    </NavigationContainer>
+          <Stack.Screen
+            name="WorkoutDetail"
+            component={WorkoutDetailScreen}
+            options={{ title: "Workout Detail", headerShown: true }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </GestureHandlerRootView>
   );
 }
