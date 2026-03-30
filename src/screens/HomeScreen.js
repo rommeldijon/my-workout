@@ -78,7 +78,6 @@ const HomeScreen = ({ navigation }) => {
   const loadHomeData = async () => {
     try {
       setLoading(true);
-      console.log("HomeScreen: loading data");
 
       const storedUser = await AsyncStorage.getItem("userDetails");
       const storedWorkouts = await AsyncStorage.getItem("workouts");
@@ -103,7 +102,10 @@ const HomeScreen = ({ navigation }) => {
             }))
           : [];
 
-        await AsyncStorage.setItem("workouts", JSON.stringify(normalizedWorkouts));
+        await AsyncStorage.setItem(
+          "workouts",
+          JSON.stringify(normalizedWorkouts)
+        );
         setWorkouts(normalizedWorkouts);
       }
     } catch (error) {
@@ -153,9 +155,7 @@ const HomeScreen = ({ navigation }) => {
   const handleWorkoutPress = (workout) => {
     navigation.navigate("WorkoutDetail", { item: workout });
   };
-   
-  console.log("Loaded workouts:", workouts);
-  
+
   const todoWorkouts = workouts.filter((item) => !item.completed);
   const quickWarmUps = workouts.filter(
     (item) => item.category === "Quick Warm-ups"
@@ -164,31 +164,31 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.topBar}>
-        <TouchableOpacity style={styles.iconButton} onPress={handleMenuPress}>
-          <Text style={styles.iconText}>☰</Text>
-        </TouchableOpacity>
-
-        <Text style={styles.topBarTitle}>
-          {loading ? "Loading..." : "Enter or Select your next exercise"}
-        </Text>
-
-        <TouchableOpacity
-          style={styles.iconButton}
-          onPress={handleSettingsPress}
-        >
-          <Text style={styles.iconText}>⚙</Text>
-        </TouchableOpacity>
-      </View>
-
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
+        <View style={styles.screenHeader}>
+          <TouchableOpacity style={styles.headerButton} onPress={handleMenuPress}>
+            <Text style={styles.headerIcon}>☰</Text>
+          </TouchableOpacity>
+
+          <Text style={styles.headerTitle}>Home</Text>
+
+          <TouchableOpacity
+            style={styles.headerButton}
+            onPress={handleSettingsPress}
+          >
+            <Text style={styles.headerIcon}>⚙</Text>
+          </TouchableOpacity>
+        </View>
+
         <View style={styles.welcomeCard}>
           <Image source={require("../../assets/logo.png")} style={styles.logo} />
-          <Text style={styles.greeting}>Hello {userName}!</Text>
+          <Text style={styles.greeting}>
+            {loading ? "Loading..." : `Hello ${userName}!`}
+          </Text>
           <Text style={styles.subheading}>
             Use the + button to add or select your next exercise!
           </Text>
@@ -327,40 +327,39 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F4F7FB",
   },
-  topBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingTop: 55,
-    paddingHorizontal: 15,
-    paddingBottom: 15,
-    backgroundColor: "#2196F3",
-  },
-  iconButton: {
-    width: 40,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  iconText: {
-    fontSize: 24,
-    color: "#fff",
-    fontWeight: "bold",
-  },
-  topBarTitle: {
-    flex: 1,
-    textAlign: "center",
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-    marginHorizontal: 10,
-  },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
     padding: 16,
+    paddingTop: 24,
     paddingBottom: 100,
   },
+  screenHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 18,
+  },
+  headerButton: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 2,
+  },
+  headerIcon: {
+    fontSize: 22,
+    color: "#222",
+    fontWeight: "bold",
+  },
+  headerTitle: {
+  fontSize: 24,
+  fontWeight: "bold",
+  color: "#222",
+ },
   welcomeCard: {
     backgroundColor: "#fff",
     borderRadius: 12,

@@ -17,29 +17,33 @@ const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
 function DrawerNavigator() {
-  console.log("DrawerNavigator loaded");
-  
+ 
   return (
-    <Drawer.Navigator initialRouteName="Home">
-      <Drawer.Screen
+    <Drawer.Navigator
+      initialRouteName="Home"
+    >  
+     <Drawer.Screen
         name="Home"
         component={HomeScreen}
-        options={{ title: "Home" }}
+        options={{ title: "Home", headerShown: false }}
       />
+
       <Drawer.Screen
         name="AddWorkout"
         component={AddWorkoutScreen}
-        options={{ title: "Add Workout" }}
+        options={{ title: "Add Workout", headerShown: true }}
       />
+
       <Drawer.Screen
         name="ViewWorkouts"
         component={ViewWorkoutsScreen}
-        options={{ title: "View Workouts" }}
+        options={{ title: "View Workouts", headerShown: true }}
       />
+
       <Drawer.Screen
         name="Settings"
         component={SettingsScreen}
-        options={{ title: "Settings" }}
+        options={{ title: "Settings", headerShown: true }}
       />
     </Drawer.Navigator>
   );
