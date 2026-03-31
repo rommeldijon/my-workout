@@ -14,7 +14,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import useFetch from "../hook/useFetch";
 
 const HomeScreen = ({ navigation }) => {
-  
+
   const [userName, setUserName] = useState("User");
   const [loadingUser, setLoadingUser] = useState(true);
   const {data: workouts, loading, error, refetch} = useFetch();
@@ -127,7 +127,7 @@ const HomeScreen = ({ navigation }) => {
             {loadingUser ? "Loading..." : `Hello ${userName}!`}
           </Text>
           <Text style={styles.subheading}>
-            Use the + button to add or select your next exercise!
+            Use the + button to add exercise or select your next exercise below!
           </Text>
         </View>
 
