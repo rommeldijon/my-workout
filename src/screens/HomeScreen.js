@@ -11,56 +11,13 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
-
-const getImageKeyFromTitle = (title = "") => {
-  const normalizedTitle = title.toLowerCase().trim();
-
-  if (normalizedTitle.includes("push")) return "pushup";
-  if (normalizedTitle.includes("squat")) return "squat";
-  if (normalizedTitle.includes("jump")) return "jumpingjacks";
-  if (normalizedTitle.includes("plank")) return "plank";
-
-  return null;
-};
-
-const exerciseImages = {
-  pushup: require("../../assets/exercises/push_ups.png"),
-  squat: require("../../assets/exercises/squat.png"),
-  jumpingjacks: require("../../assets/exercises/jumping_jacks.png"),
-  plank: require("../../assets/exercises/plank_on_elbows.png"),
-};
-
-const defaultWorkouts = [
-  {
-    id: "1",
-    title: "Push Ups",
-    description: "3 sets of 10 reps",
-    category: "Exercises",
-    completed: false,
-    imageKey: "pushup",
-  },
-  {
-    id: "2",
-    title: "Jumping Jacks",
-    description: "2 minutes warm-up",
-    category: "Quick Warm-ups",
-    completed: false,
-    imageKey: "jumpingjacks",
-  },
-  {
-    id: "3",
-    title: "Bodyweight Squats",
-    description: "3 sets of 12 reps",
-    category: "Exercises",
-    completed: true,
-    imageKey: "squat",
-  },
-];
+import useFetch from "../hook/useFetch";
 
 const HomeScreen = ({ navigation }) => {
+  
   const [userName, setUserName] = useState("User");
-  const [workouts, setWorkouts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loadingUser, setLoadingUser] = useState(true);
+  const {data: workouts, loading, error, refetch} = useFetch();
 
   const showAlert = (title, message, onOk) => {
     if (Platform.OS === "web") {
@@ -75,12 +32,11 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
-  const loadHomeData = async () => {
+  const loadUserData = async () => {
     try {
-      setLoading(true);
+      setLoadingUser(true);
 
       const storedUser = await AsyncStorage.getItem("userDetails");
-      const storedWorkouts = await AsyncStorage.getItem("workouts");
 
       if (storedUser) {
         const parsedUser = JSON.parse(storedUser);
@@ -88,38 +44,19 @@ const HomeScreen = ({ navigation }) => {
       } else {
         setUserName("User");
       }
-
-      if (!storedWorkouts) {
-        await AsyncStorage.setItem("workouts", JSON.stringify(defaultWorkouts));
-        setWorkouts(defaultWorkouts);
-      } else {
-        const parsedWorkouts = JSON.parse(storedWorkouts);
-
-        const normalizedWorkouts = Array.isArray(parsedWorkouts)
-          ? parsedWorkouts.map((item) => ({
-              ...item,
-              imageKey: item.imageKey || getImageKeyFromTitle(item.title),
-            }))
-          : [];
-
-        await AsyncStorage.setItem(
-          "workouts",
-          JSON.stringify(normalizedWorkouts)
-        );
-        setWorkouts(normalizedWorkouts);
-      }
     } catch (error) {
-      console.log("Error loading home data:", error);
-      showAlert("Error", "Failed to load home screen data.");
+      console.log("Error loading user data:", error);
+      showAlert("Error", "Failed to load user data.");
     } finally {
-      setLoading(false);
+      setLoadingUser(false);
     }
   };
-
+  
   useFocusEffect(
     useCallback(() => {
-      loadHomeData();
-    }, [])
+      loadUserData();
+      refetch();
+    }, [refetch])
   );
 
   const handleLogout = async () => {
@@ -187,7 +124,7 @@ const HomeScreen = ({ navigation }) => {
         <View style={styles.welcomeCard}>
           <Image source={require("../../assets/logo.png")} style={styles.logo} />
           <Text style={styles.greeting}>
-            {loading ? "Loading..." : `Hello ${userName}!`}
+            {loadingUser ? "Loading..." : `Hello ${userName}!`}
           </Text>
           <Text style={styles.subheading}>
             Use the + button to add or select your next exercise!
@@ -213,6 +150,18 @@ const HomeScreen = ({ navigation }) => {
             <Text style={styles.logoutButtonText}>Logout</Text>
           </TouchableOpacity>
         </View>
+        
+        {loading && (
+          <View style={styles.placeholderCard}>
+            <Text style={styles.placeholderText}>Loading workouts...</Text>
+          </View>
+        )}
+
+        {error ? (
+          <View style={styles.placeholderCard}>
+            <Text style={styles.placeholderText}>{error}</Text>
+          </View>
+        ) : null}
 
         {workouts.length === 0 && !loading && (
           <View style={styles.placeholderCard}>
@@ -232,9 +181,9 @@ const HomeScreen = ({ navigation }) => {
                 style={styles.workoutCard}
                 onPress={() => handleWorkoutPress(item)}
               >
-                {item.imageKey && exerciseImages[item.imageKey] && (
+                {item.image && (
                   <Image
-                    source={exerciseImages[item.imageKey]}
+                    source={item.image}
                     style={styles.workoutImage}
                   />
                 )}
@@ -265,10 +214,10 @@ const HomeScreen = ({ navigation }) => {
                   style={styles.horizontalWorkoutCard}
                   onPress={() => handleWorkoutPress(item)}
                 >
-                  {item.imageKey && exerciseImages[item.imageKey] && (
+                  {item.image && (
                     <Image
-                      source={exerciseImages[item.imageKey]}
-                      style={styles.horizontalWorkoutImage}
+                      source={item.image}
+                      style={styles.workoutImage}
                     />
                   )}
 
@@ -294,9 +243,9 @@ const HomeScreen = ({ navigation }) => {
                 style={styles.doneWorkoutCard}
                 onPress={() => handleWorkoutPress(item)}
               >
-                {item.imageKey && exerciseImages[item.imageKey] && (
+                {item.image && (
                   <Image
-                    source={exerciseImages[item.imageKey]}
+                    source={item.image}
                     style={styles.workoutImage}
                   />
                 )}
