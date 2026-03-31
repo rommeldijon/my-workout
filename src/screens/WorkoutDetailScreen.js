@@ -8,13 +8,6 @@ import {
   Image,
 } from "react-native";
 
-const exerciseImages = {
-  pushup: require("../../assets/exercises/push_ups.png"),
-  squat: require("../../assets/exercises/squat.png"),
-  jumpingjacks: require("../../assets/exercises/jumping_jacks.png"),
-  plank: require("../../assets/exercises/plank_on_elbows.png"),
-};
-
 const WorkoutDetailScreen = ({ route, navigation }) => {
   const { item } = route.params || {};
 
@@ -23,11 +16,8 @@ const WorkoutDetailScreen = ({ route, navigation }) => {
       <Text style={styles.header}>Workout Details</Text>
 
       <View style={styles.card}>
-        {item?.imageKey && exerciseImages[item.imageKey] ? (
-          <Image
-            source={exerciseImages[item.imageKey]}
-            style={styles.image}
-          />
+        {item?.image ? (
+          <Image source={item.image} style={styles.image} />
         ) : null}
 
         <Text style={styles.label}>Title</Text>

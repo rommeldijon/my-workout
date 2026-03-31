@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import {
   View,
   Text,
@@ -7,14 +7,13 @@ import {
   ScrollView,
   Alert,
   Platform,
-  Image
+  Image,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
+import useFetch from "../hook/useFetch";
 
 const ViewWorkoutsScreen = ({ navigation }) => {
-  const [workouts, setWorkouts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: workouts, loading, error, refetch } = useFetch();
 
   const showAlert = (title, message, onOk) => {
     if (Platform.OS === "web") {
@@ -29,33 +28,10 @@ const ViewWorkoutsScreen = ({ navigation }) => {
     }
   };
 
-  const exerciseImages = {
-    pushup: require("../../assets/exercises/push_ups.png"),
-    squat: require("../../assets/exercises/squat.png"),
-    jumpingjacks: require("../../assets/exercises/jumping_jacks.png"),
-    plank: require("../../assets/exercises/plank_on_elbows.png"),
-  };
-
-  const loadWorkouts = async () => {
-    try {
-      setLoading(true);
-
-      const storedWorkouts = await AsyncStorage.getItem("workouts");
-      const parsedWorkouts = storedWorkouts ? JSON.parse(storedWorkouts) : [];
-
-      setWorkouts(Array.isArray(parsedWorkouts) ? parsedWorkouts : []);
-    } catch (error) {
-      console.log("Error loading workouts:", error);
-      showAlert("Error", "Failed to load workouts.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useFocusEffect(
     useCallback(() => {
-      loadWorkouts();
-    }, [])
+      refetch();
+    }, [refetch])
   );
 
   const handleWorkoutPress = (workout) => {
@@ -73,6 +49,10 @@ const ViewWorkoutsScreen = ({ navigation }) => {
       >
         {loading ? (
           <Text style={styles.infoText}>Loading workouts...</Text>
+        ) : error ? (
+          <View style={styles.emptyCard}>
+            <Text style={styles.infoText}>{error}</Text>
+          </View>
         ) : workouts.length === 0 ? (
           <View style={styles.emptyCard}>
             <Text style={styles.infoText}>
@@ -86,15 +66,16 @@ const ViewWorkoutsScreen = ({ navigation }) => {
               style={styles.workoutCard}
               onPress={() => handleWorkoutPress(item)}
             >
-              {item.imageKey && exerciseImages[item.imageKey] ? (
-                <Image
-                  source={exerciseImages[item.imageKey]}
-                  style={styles.workoutImage}
-                />
+              {item.image ? (
+                <Image source={item.image} style={styles.workoutImage} />
               ) : null}
 
-              <Text style={styles.workoutTitle}>{item.title}</Text>
-              <Text style={styles.workoutDescription}>{item.description}</Text>
+              <Text style={styles.workoutTitle}>
+                {item.title || "Untitled Workout"}
+              </Text>
+              <Text style={styles.workoutDescription}>
+                {item.description || "No description available"}
+              </Text>
               <Text style={styles.workoutMeta}>
                 Category: {item.category || "N/A"}
               </Text>
