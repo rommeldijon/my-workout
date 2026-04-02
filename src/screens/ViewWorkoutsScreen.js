@@ -70,7 +70,7 @@ const ViewWorkoutsScreen = ({ navigation }) => {
           style={workoutStyles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <Text style={workoutStyles.backButtonText}>Back to Home</Text>
+          <Text style={workoutStyles.backButtonText}>Previous</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>

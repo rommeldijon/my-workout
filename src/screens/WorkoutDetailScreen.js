@@ -44,7 +44,7 @@ const WorkoutDetailScreen = ({ route, navigation }) => {
         style={styles.backButton}
         onPress={() => navigation.goBack()}
       >
-        <Text style={styles.backButtonText}>Back to Home</Text>
+        <Text style={styles.backButtonText}>Previous</Text>
       </TouchableOpacity>
     </ScrollView>
   );
