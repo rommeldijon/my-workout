@@ -67,10 +67,10 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: "#fff",
-    borderRadius: 14,
-    padding: 20,
-    marginBottom: 25,
-    elevation: 3,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 14,
+    elevation: 2,
   },
   label: {
     fontSize: 14,
@@ -98,9 +98,10 @@ const styles = StyleSheet.create({
   },
   image: {
     width: "100%",
-    height: 200,
-    borderRadius: 12,
-    marginBottom: 15,
-    resizeMode: "cover",
+    height: 120,
+    borderRadius: 10,
+    marginBottom: 12,
+    resizeMode: "contain",
+    alignSelf: "center",
   },
 });

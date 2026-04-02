@@ -217,7 +217,7 @@ const HomeScreen = ({ navigation }) => {
                   {item.image && (
                     <Image
                       source={item.image}
-                      style={styles.workoutImage}
+                      style={styles.horizontalWorkoutImage}
                     />
                   )}
 
@@ -445,16 +445,18 @@ const styles = StyleSheet.create({
   },
   workoutImage: {
     width: "100%",
-    height: 140,
+    height: 100,
     borderRadius: 10,
     marginBottom: 10,
-    resizeMode: "cover",
+    resizeMode: "contain",
+    alignSelf: "center",
   },
   horizontalWorkoutImage: {
     width: "100%",
-    height: 100,
+    height: 80,
     borderRadius: 10,
     marginBottom: 8,
-    resizeMode: "cover",
+    resizeMode: "contain",
+    alignSelf: "center",
   },
 });
