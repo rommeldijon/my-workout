@@ -78,6 +78,90 @@ const workoutStyles = StyleSheet.create({
     fontSize: 17,
     fontWeight: "bold",
   },
+
+  formContainer: {
+    flexGrow: 1,
+    padding: 20,
+    backgroundColor: "#F4F7FB",
+  },
+  formTitle: {
+    fontSize: 28,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 25,
+    color: colors.black,
+  },
+  formLabel: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 8,
+    marginTop: 10,
+  },
+  formInput: {
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 12,
+    fontSize: 16,
+    backgroundColor: colors.white,
+    marginBottom: 14,
+  },
+  multilineInput: {
+    minHeight: 100,
+    textAlignVertical: "top",
+  },
+  statusContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 25,
+    marginTop: 5,
+  },
+  statusButton: {
+    flex: 1,
+    backgroundColor: colors.white,
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    marginHorizontal: 5,
+  },
+  statusButtonActive: {
+    backgroundColor: "#2196F3",
+    borderColor: "#2196F3",
+  },
+  statusButtonText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  statusButtonTextActive: {
+    color: colors.white,
+  },
+  saveButton: {
+    backgroundColor: "#4CAF50",
+    paddingVertical: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  saveButtonText: {
+    color: colors.white,
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  cancelButton: {
+    backgroundColor: "#f44336",
+    paddingVertical: 15,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  cancelButtonText: {
+    color: colors.white,
+    fontSize: 18,
+    fontWeight: "bold",
+  },
 });
 
 export default workoutStyles;
