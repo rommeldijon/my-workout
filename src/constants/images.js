@@ -8,3 +8,7 @@ export const exerciseImages = {
 export const appImages = {
   logo: require("../../assets/logo.png"),
 };
+
+export const getExerciseImage = (imageKey) => {
+  return exerciseImages[imageKey] || null;
+};
