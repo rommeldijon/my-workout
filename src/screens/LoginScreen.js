@@ -1,41 +1,24 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-  Platform,
-  Image,
-} from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Image } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import authStyles from "../styles/authStyles";
+import { appImages } from "../constants/images";
+import storageKeys from "../constants/storageKeys";
+import { showAlert } from "../utils/alertHelper";
+import { isValidEmail, isEmpty } from "../utils/validators";
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const showAlert = (title, message, onOk) => {
-    if (Platform.OS === "web") {
-      window.alert(`${title}\n\n${message}`);
-      if (onOk) onOk();
-    } else {
-      Alert.alert(
-        title,
-        message,
-        onOk ? [{ text: "OK", onPress: onOk }] : undefined
-      );
-    }
-  };
-
   const validateForm = () => {
-    if (!email.trim() || !password.trim()) {
+    if (isEmpty(email) || isEmpty(password)) {
       showAlert("Validation Error", "Email and password are required.");
       return false;
     }
 
-    const emailRegex = /\S+@\S+\.\S+/;
-    if (!emailRegex.test(email.trim())) {
+    if (!isValidEmail(email.trim())) {
       showAlert("Validation Error", "Please enter a valid email address.");
       return false;
     }
@@ -45,7 +28,7 @@ const LoginScreen = ({ navigation }) => {
 
   const handleLogin = async () => {
     try {
-      const storedUser = await AsyncStorage.getItem("userDetails");
+      const storedUser = await AsyncStorage.getItem(storageKeys.userDetails);
       console.log("Stored User:", storedUser);
 
       if (!storedUser) {
@@ -59,7 +42,7 @@ const LoginScreen = ({ navigation }) => {
         email.trim() === parsedUser.email &&
         password.trim() === parsedUser.password
       ) {
-        await AsyncStorage.setItem("loggedInUser", parsedUser.email);
+        await AsyncStorage.setItem(storageKeys.loggedInUser, parsedUser.email);
 
         showAlert("Success", "Login successful!", () => {
           navigation.reset({
@@ -90,16 +73,13 @@ const LoginScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Image
-        source={require("../../assets/logo.png")}
-        style={styles.logo}
-      />
+    <View style={authStyles.container}>
+      <Image source={appImages.logo} style={authStyles.logo} />
 
-      <Text style={styles.title}>Login</Text>
+      <Text style={authStyles.title}>Login</Text>
 
       <TextInput
-        style={styles.input}
+        style={authStyles.input}
         placeholder="Enter your email"
         placeholderTextColor="#888"
         value={email}
@@ -109,7 +89,7 @@ const LoginScreen = ({ navigation }) => {
       />
 
       <TextInput
-        style={styles.input}
+        style={authStyles.input}
         placeholder="Enter your password"
         placeholderTextColor="#888"
         value={password}
@@ -117,14 +97,14 @@ const LoginScreen = ({ navigation }) => {
         secureTextEntry
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleLoginPress}>
-        <Text style={styles.buttonText}>Login</Text>
+      <TouchableOpacity style={authStyles.button} onPress={handleLoginPress}>
+        <Text style={authStyles.buttonText}>Login</Text>
       </TouchableOpacity>
 
-      <View style={styles.signupContainer}>
-        <Text style={styles.signupText}>Don’t have an account?</Text>
+      <View style={authStyles.signupContainer}>
+        <Text style={authStyles.signupText}>Don’t have an account?</Text>
         <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
-          <Text style={styles.signupLink}> Sign Up</Text>
+          <Text style={authStyles.signupLink}> Sign Up</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -132,61 +112,3 @@ const LoginScreen = ({ navigation }) => {
 };
 
 export default LoginScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    justifyContent: "center",
-    backgroundColor: "#fff",
-  },
-  logo: {
-    width: 100,
-    height: 100,
-    resizeMode: "contain",
-    alignSelf: "center",
-    marginBottom: 20,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 25,
-    textAlign: "center",
-    color: "#222",
-  },
-  input: {
-    borderColor: "#ccc",
-    borderWidth: 1,
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 15,
-    fontSize: 16,
-    backgroundColor: "#f9f9f9",
-  },
-  button: {
-    backgroundColor: "#2196F3",
-    paddingVertical: 14,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 10,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  signupContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginTop: 20,
-  },
-  signupText: {
-    fontSize: 15,
-    color: "#333",
-  },
-  signupLink: {
-    fontSize: 15,
-    color: "blue",
-    fontWeight: "bold",
-  },
-});
