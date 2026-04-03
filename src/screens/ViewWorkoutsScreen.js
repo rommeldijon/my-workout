@@ -2,12 +2,12 @@ import React, { useCallback } from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 
-import useFetch from "../hooks/useFetch";
+import useWorkouts from "../hooks/useWorkouts";
 import workoutStyles from "../styles/workoutStyles";
 import WorkoutCard from "../components/WorkoutCard";
 
 const ViewWorkoutsScreen = ({ navigation }) => {
-  const { data: workouts, loading, error, refetch } = useFetch();
+  const { data: workouts, loading, error, refetch } = useWorkouts();
 
   useFocusEffect(
     useCallback(() => {

@@ -12,7 +12,7 @@ const attachImages = (items) => {
   }));
 };
 
-const useFetch = () => {
+const useWorkouts = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -35,7 +35,7 @@ const useFetch = () => {
         setData(attachImages(defaultWorkouts));
       }
     } catch (err) {
-      console.log("useFetch error:", err);
+      console.log("useWorkouts error:", err);
       setError("Failed to load workouts.");
     } finally {
       setLoading(false);
@@ -54,4 +54,4 @@ const useFetch = () => {
   };
 };
 
-export default useFetch;
+export default useWorkouts;

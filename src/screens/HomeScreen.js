@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 
-import useFetch from "../hooks/useFetch";
+import useWorkouts from "../hooks/useWorkouts";
 import homeStyles from "../styles/homeStyles";
 import { appImages } from "../constants/images";
 import storageKeys from "../constants/storageKeys";
@@ -13,7 +13,7 @@ import WorkoutCard from "../components/WorkoutCard";
 const HomeScreen = ({ navigation }) => {
   const [userName, setUserName] = useState("User");
   const [loadingUser, setLoadingUser] = useState(true);
-  const { data: workouts = [], loading, error, refetch } = useFetch();
+  const { data: workouts = [], loading, error, refetch } = useWorkouts();
 
   const loadUserData = async () => {
     try {
