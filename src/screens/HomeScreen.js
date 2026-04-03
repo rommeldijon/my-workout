@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 
-import useFetch from "../hook/useFetch";
+import useFetch from "../hooks/useFetch";
 import homeStyles from "../styles/homeStyles";
 import { appImages } from "../constants/images";
 import storageKeys from "../constants/storageKeys";
@@ -206,7 +206,7 @@ const HomeScreen = ({ navigation }) => {
             </Text>
           )}
         </View>
-        
+
         <View style={homeStyles.section}>
           <Text style={homeStyles.sectionTitle}>Done</Text>
 

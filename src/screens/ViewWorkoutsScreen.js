@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 
-import useFetch from "../hook/useFetch";
+import useFetch from "../hooks/useFetch";
 import workoutStyles from "../styles/workoutStyles";
 import WorkoutCard from "../components/WorkoutCard";
 
