@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, ScrollView } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import workoutStyles from "../styles/workoutStyles";
-import storageKeys from "../constants/storageKeys";
 import { showAlert } from "../utils/alertHelper";
 import { isEmpty } from "../utils/validators";
+import { addWorkout } from "../services/storageService";
 
 const AddWorkoutScreen = ({ navigation }) => {
   const [title, setTitle] = useState("");
@@ -28,9 +27,6 @@ const AddWorkoutScreen = ({ navigation }) => {
     }
 
     try {
-      const storedWorkouts = await AsyncStorage.getItem(storageKeys.workouts);
-      const existingWorkouts = storedWorkouts ? JSON.parse(storedWorkouts) : [];
-
       const newWorkout = {
         id: Date.now().toString(),
         title: title.trim(),
@@ -39,12 +35,7 @@ const AddWorkoutScreen = ({ navigation }) => {
         completed: status === "Done",
       };
 
-      const updatedWorkouts = [...existingWorkouts, newWorkout];
-
-      await AsyncStorage.setItem(
-        storageKeys.workouts,
-        JSON.stringify(updatedWorkouts)
-      );
+      await addWorkout(newWorkout);
 
       showAlert("Success", "Workout added successfully!", () => {
         navigation.goBack();
