@@ -8,6 +8,7 @@ import homeStyles from "../styles/homeStyles";
 import { appImages } from "../constants/images";
 import storageKeys from "../constants/storageKeys";
 import { showAlert } from "../utils/alertHelper";
+import WorkoutCard from "../components/WorkoutCard";
 
 const HomeScreen = ({ navigation }) => {
   const [userName, setUserName] = useState("User");
@@ -164,23 +165,13 @@ const HomeScreen = ({ navigation }) => {
 
           {todoWorkouts.length > 0 ? (
             todoWorkouts.map((item) => (
-              <TouchableOpacity
+              <WorkoutCard
                 key={item.id}
-                style={homeStyles.workoutCard}
-                onPress={() => handleWorkoutPress(item)}
-              >
-                {item.image && (
-                  <Image
-                    source={item.image}
-                    style={homeStyles.workoutImage}
-                  />
-                )}
-
-                <Text style={homeStyles.workoutTitle}>{item.title}</Text>
-                <Text style={homeStyles.workoutDescription}>
-                  {item.description}
-                </Text>
-              </TouchableOpacity>
+                item={item}
+                onPress={handleWorkoutPress}
+                showCategory={false}
+                showStatus={false}
+              />
             ))
           ) : (
             <Text style={homeStyles.emptySectionText}>
@@ -199,23 +190,14 @@ const HomeScreen = ({ navigation }) => {
               contentContainerStyle={homeStyles.horizontalScroll}
             >
               {quickWarmUps.map((item) => (
-                <TouchableOpacity
+                <WorkoutCard
                   key={item.id}
-                  style={homeStyles.horizontalWorkoutCard}
-                  onPress={() => handleWorkoutPress(item)}
-                >
-                  {item.image && (
-                    <Image
-                      source={item.image}
-                      style={homeStyles.horizontalWorkoutImage}
-                    />
-                  )}
-
-                  <Text style={homeStyles.workoutTitle}>{item.title}</Text>
-                  <Text style={homeStyles.workoutDescription}>
-                    {item.description}
-                  </Text>
-                </TouchableOpacity>
+                  item={item}
+                  onPress={handleWorkoutPress}
+                  variant="horizontal"
+                  showCategory={false}
+                  showStatus={false}
+                />
               ))}
             </ScrollView>
           ) : (
@@ -224,7 +206,7 @@ const HomeScreen = ({ navigation }) => {
             </Text>
           )}
         </View>
-
+        
         <View style={homeStyles.section}>
           <Text style={homeStyles.sectionTitle}>Done</Text>
 

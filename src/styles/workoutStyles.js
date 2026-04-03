@@ -34,6 +34,7 @@ const workoutStyles = StyleSheet.create({
     lineHeight: 24,
     textAlign: "center",
   },
+
   workoutCard: {
     backgroundColor: colors.white,
     borderRadius: 12,
@@ -41,6 +42,22 @@ const workoutStyles = StyleSheet.create({
     marginBottom: 14,
     elevation: 2,
   },
+  horizontalWorkoutCard: {
+    backgroundColor: colors.white,
+    borderRadius: 12,
+    padding: 12,
+    marginRight: 12,
+    width: 180,
+    elevation: 2,
+  },
+  doneWorkoutCard: {
+    backgroundColor: "#E8F5E9",
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    elevation: 1,
+  },
+
   workoutTitle: {
     fontSize: 18,
     fontWeight: "bold",
@@ -58,6 +75,7 @@ const workoutStyles = StyleSheet.create({
     color: colors.gray,
     marginBottom: 2,
   },
+
   workoutImage: {
     width: "100%",
     height: 120,
@@ -66,6 +84,15 @@ const workoutStyles = StyleSheet.create({
     resizeMode: "contain",
     alignSelf: "center",
   },
+  horizontalWorkoutImage: {
+    width: "100%",
+    height: 70,
+    borderRadius: 10,
+    marginBottom: 8,
+    resizeMode: "contain",
+    alignSelf: "center",
+  },
+
   backButton: {
     backgroundColor: "#2196F3",
     paddingVertical: 14,

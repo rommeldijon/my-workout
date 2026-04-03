@@ -1,9 +1,10 @@
 import React, { useCallback } from "react";
-import { View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 
 import useFetch from "../hook/useFetch";
 import workoutStyles from "../styles/workoutStyles";
+import WorkoutCard from "../components/WorkoutCard";
 
 const ViewWorkoutsScreen = ({ navigation }) => {
   const { data: workouts, loading, error, refetch } = useFetch();
@@ -41,28 +42,13 @@ const ViewWorkoutsScreen = ({ navigation }) => {
           </View>
         ) : (
           workouts.map((item) => (
-            <TouchableOpacity
+            <WorkoutCard
               key={item.id}
-              style={workoutStyles.workoutCard}
-              onPress={() => handleWorkoutPress(item)}
-            >
-              {item.image ? (
-                <Image source={item.image} style={workoutStyles.workoutImage} />
-              ) : null}
-
-              <Text style={workoutStyles.workoutTitle}>
-                {item.title || "Untitled Workout"}
-              </Text>
-              <Text style={workoutStyles.workoutDescription}>
-                {item.description || "No description available"}
-              </Text>
-              <Text style={workoutStyles.workoutMeta}>
-                Category: {item.category || "N/A"}
-              </Text>
-              <Text style={workoutStyles.workoutMeta}>
-                Status: {item.completed ? "Done" : "To Do"}
-              </Text>
-            </TouchableOpacity>
+              item={item}
+              onPress={handleWorkoutPress}
+              showCategory={true}
+              showStatus={true}
+            />
           ))
         )}
 
@@ -70,7 +56,7 @@ const ViewWorkoutsScreen = ({ navigation }) => {
           style={workoutStyles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <Text style={workoutStyles.backButtonText}>Previous</Text>
+          <Text style={workoutStyles.backButtonText}>Back to Home</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>

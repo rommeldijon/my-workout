@@ -125,9 +125,9 @@ const homeStyles = StyleSheet.create({
   horizontalWorkoutCard: {
     backgroundColor: colors.white,
     borderRadius: 12,
-    padding: 16,
+    padding: 12,
     marginRight: 12,
-    width: 220,
+    width: 180,
     elevation: 2,
   },
   doneWorkoutCard: {
