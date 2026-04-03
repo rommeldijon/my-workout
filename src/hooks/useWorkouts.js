@@ -1,9 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import storageKeys from "../constants/storageKeys";
 import defaultWorkouts from "../data/defaultWorkouts";
 import { getExerciseImage } from "../constants/images";
+import { getWorkouts, saveWorkouts } from "../services/storageService";
 
 const attachImages = (items) => {
   return items.map((item) => ({
@@ -22,16 +21,12 @@ const useWorkouts = () => {
       setLoading(true);
       setError("");
 
-      const storedWorkouts = await AsyncStorage.getItem(storageKeys.workouts);
+      const storedWorkouts = await getWorkouts();
 
-      if (storedWorkouts) {
-        const parsedWorkouts = JSON.parse(storedWorkouts);
-        setData(attachImages(parsedWorkouts));
+      if (storedWorkouts.length > 0) {
+        setData(attachImages(storedWorkouts));
       } else {
-        await AsyncStorage.setItem(
-          storageKeys.workouts,
-          JSON.stringify(defaultWorkouts)
-        );
+        await saveWorkouts(defaultWorkouts);
         setData(attachImages(defaultWorkouts));
       }
     } catch (err) {
@@ -54,4 +49,4 @@ const useWorkouts = () => {
   };
 };
 
-export default useWorkouts;
+export default useWorkouts;S
