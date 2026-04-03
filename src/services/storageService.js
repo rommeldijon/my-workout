@@ -16,3 +16,27 @@ export const addWorkout = async (newWorkout) => {
   await saveWorkouts(updatedWorkouts);
   return updatedWorkouts;
 };
+
+export const saveUserDetails = async (userDetails) => {
+  await AsyncStorage.setItem(
+    storageKeys.userDetails,
+    JSON.stringify(userDetails)
+  );
+};
+
+export const getUserDetails = async () => {
+  const storedUser = await AsyncStorage.getItem(storageKeys.userDetails);
+  return storedUser ? JSON.parse(storedUser) : null;
+};
+
+export const saveLoggedInUser = async (email) => {
+  await AsyncStorage.setItem(storageKeys.loggedInUser, email);
+};
+
+export const getLoggedInUser = async () => {
+  return await AsyncStorage.getItem(storageKeys.loggedInUser);
+};
+
+export const clearLoggedInUser = async () => {
+  await AsyncStorage.removeItem(storageKeys.loggedInUser);
+};

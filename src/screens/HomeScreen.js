@@ -1,14 +1,13 @@
 import React, { useCallback, useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 
 import useWorkouts from "../hooks/useWorkouts";
 import homeStyles from "../styles/homeStyles";
 import { appImages } from "../constants/images";
-import storageKeys from "../constants/storageKeys";
 import { showAlert } from "../utils/alertHelper";
 import WorkoutCard from "../components/WorkoutCard";
+import { getUserDetails, clearLoggedInUser} from "../services/storageService";
 
 const HomeScreen = ({ navigation }) => {
   const [userName, setUserName] = useState("User");
@@ -19,11 +18,10 @@ const HomeScreen = ({ navigation }) => {
     try {
       setLoadingUser(true);
 
-      const storedUser = await AsyncStorage.getItem(storageKeys.userDetails);
+      const storedUser = await getUserDetails();
 
       if (storedUser) {
-        const parsedUser = JSON.parse(storedUser);
-        setUserName(parsedUser?.userName || "User");
+        setUserName(storedUser.userName || "User");
       } else {
         setUserName("User");
       }
@@ -44,7 +42,7 @@ const HomeScreen = ({ navigation }) => {
 
   const handleLogout = async () => {
     try {
-      await AsyncStorage.removeItem(storageKeys.loggedInUser);
+      await clearLoggedInUser();
       navigation.replace("Login");
     } catch (error) {
       console.log("Logout error:", error);

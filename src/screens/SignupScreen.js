@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Image } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import authStyles from "../styles/authStyles";
 import { appImages } from "../constants/images";
-import storageKeys from "../constants/storageKeys";
 import { showAlert } from "../utils/alertHelper";
 import { isValidEmail, isEmpty } from "../utils/validators";
+import { saveUserDetails, getUserDetails } from "../services/storageService";
 
 const SignupScreen = ({ navigation }) => {
   const [userName, setUserName] = useState("");
@@ -39,12 +38,9 @@ const SignupScreen = ({ navigation }) => {
     };
 
     try {
-      await AsyncStorage.setItem(
-        storageKeys.userDetails,
-        JSON.stringify(userDetails)
-      );
+      await saveUserDetails(userDetails);
 
-      const savedData = await AsyncStorage.getItem(storageKeys.userDetails);
+      const savedData = await getUserDetails();
       console.log("Saved User:", savedData);
 
       showAlert("Success", "Registration successful!", () => {

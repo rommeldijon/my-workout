@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Image } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import authStyles from "../styles/authStyles";
 import { appImages } from "../constants/images";
-import storageKeys from "../constants/storageKeys";
 import { showAlert } from "../utils/alertHelper";
 import { isValidEmail, isEmpty } from "../utils/validators";
+import { getUserDetails, saveLoggedInUser} from "../services/storageService";
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -28,21 +27,19 @@ const LoginScreen = ({ navigation }) => {
 
   const handleLogin = async () => {
     try {
-      const storedUser = await AsyncStorage.getItem(storageKeys.userDetails);
-      console.log("Stored User:", storedUser);
+      const parsedUser = await getUserDetails();
+      console.log("Stored User:", parsedUser);
 
-      if (!storedUser) {
+      if (!parsedUser) {
         showAlert("Error", "No user found. Please sign up first.");
         return;
       }
-
-      const parsedUser = JSON.parse(storedUser);
 
       if (
         email.trim() === parsedUser.email &&
         password.trim() === parsedUser.password
       ) {
-        await AsyncStorage.setItem(storageKeys.loggedInUser, parsedUser.email);
+        await saveLoggedInUser(parsedUser.email);
 
         showAlert("Success", "Login successful!", () => {
           navigation.reset({
