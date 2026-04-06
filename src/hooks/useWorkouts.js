@@ -49,4 +49,4 @@ const useWorkouts = () => {
   };
 };
 
-export default useWorkouts;S
+export default useWorkouts;
