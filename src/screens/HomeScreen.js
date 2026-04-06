@@ -1,5 +1,11 @@
 import React, { useCallback, useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  Image,
+} from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 
 import useWorkouts from "../hooks/useWorkouts";
@@ -7,7 +13,7 @@ import homeStyles from "../styles/homeStyles";
 import { appImages } from "../constants/images";
 import { showAlert } from "../utils/alertHelper";
 import WorkoutCard from "../components/WorkoutCard";
-import { getUserDetails, clearLoggedInUser} from "../services/storageService";
+import { getUserDetails } from "../services/storageService";
 
 const HomeScreen = ({ navigation }) => {
   const [userName, setUserName] = useState("User");
@@ -39,16 +45,6 @@ const HomeScreen = ({ navigation }) => {
       refetch();
     }, [refetch])
   );
-
-  const handleLogout = async () => {
-    try {
-      await clearLoggedInUser();
-      navigation.replace("Login");
-    } catch (error) {
-      console.log("Logout error:", error);
-      showAlert("Error", "Failed to log out.");
-    }
-  };
 
   const handleStartWorkout = () => {
     showAlert("Start Workout", "Workout session screen coming soon.");
@@ -95,7 +91,7 @@ const HomeScreen = ({ navigation }) => {
             <Text style={homeStyles.headerIcon}>☰</Text>
           </TouchableOpacity>
 
-          <Text style={homeStyles.headerTitle}>Home</Text>
+          <Image source={appImages.logo} style={homeStyles.headerLogo} />
 
           <TouchableOpacity
             style={homeStyles.headerButton}
@@ -106,7 +102,6 @@ const HomeScreen = ({ navigation }) => {
         </View>
 
         <View style={homeStyles.welcomeCard}>
-          <Image source={appImages.logo} style={homeStyles.logo} />
           <Text style={homeStyles.greeting}>
             {loadingUser ? "Loading..." : `Hello ${userName}!`}
           </Text>
@@ -115,26 +110,19 @@ const HomeScreen = ({ navigation }) => {
           </Text>
         </View>
 
-        <View style={homeStyles.actionButtonsContainer}>
+        <View style={homeStyles.actionButtonsRow}>
           <TouchableOpacity
-            style={homeStyles.primaryButton}
+            style={homeStyles.smallActionButton}
             onPress={handleStartWorkout}
           >
-            <Text style={homeStyles.primaryButtonText}>Start Workout</Text>
+            <Text style={homeStyles.smallActionButtonText}>Start Workout</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={homeStyles.primaryButton}
+            style={homeStyles.smallActionButton}
             onPress={handleViewWorkouts}
           >
-            <Text style={homeStyles.primaryButtonText}>View Workouts</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={homeStyles.logoutButton}
-            onPress={handleLogout}
-          >
-            <Text style={homeStyles.logoutButtonText}>Logout</Text>
+            <Text style={homeStyles.smallActionButtonText}>View Workouts</Text>
           </TouchableOpacity>
         </View>
 
