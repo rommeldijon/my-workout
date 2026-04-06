@@ -5,7 +5,7 @@ import authStyles from "../styles/authStyles";
 import { appImages } from "../constants/images";
 import { showAlert } from "../utils/alertHelper";
 import { isValidEmail, isEmpty } from "../utils/validators";
-import { getUserDetails, saveLoggedInUser} from "../services/storageService";
+import { getUserDetails, saveLoggedInUser } from "../services/storageService";
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -36,23 +36,13 @@ const LoginScreen = ({ navigation }) => {
       }
 
       if (
-        email.trim() === parsedUser.email &&
+        email.trim() === parsedUser.email.trim() &&
         password.trim() === parsedUser.password
       ) {
         await saveLoggedInUser(parsedUser.email);
 
         showAlert("Success", "Login successful!", () => {
-          navigation.reset({
-            index: 0,
-            routes: [
-              {
-                name: "Main",
-                state: {
-                  routes: [{ name: "Home" }],
-                },
-              },
-            ],
-          });
+          navigation.replace("Main");
         });
       } else {
         showAlert("Error", "Invalid email or password.");
