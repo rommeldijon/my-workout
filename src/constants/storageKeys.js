@@ -1,6 +1,6 @@
 const storageKeys = {
-  userDetails: "userDetails",
   workouts: "workouts",
+  users: "users",
   loggedInUser: "loggedInUser",
 };
 

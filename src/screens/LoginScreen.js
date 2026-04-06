@@ -27,18 +27,15 @@ const LoginScreen = ({ navigation }) => {
 
   const handleLogin = async () => {
     try {
-      const parsedUser = await getUserDetails();
+      const parsedUser = await getUserDetails(email.trim());
       console.log("Stored User:", parsedUser);
 
       if (!parsedUser) {
-        showAlert("Error", "No user found. Please sign up first.");
+        showAlert("Error", "No account found with this email.");
         return;
       }
 
-      if (
-        email.trim() === parsedUser.email.trim() &&
-        password.trim() === parsedUser.password
-      ) {
+      if (password.trim() === parsedUser.password) {
         await saveLoggedInUser(parsedUser.email);
 
         showAlert("Success", "Login successful!", () => {

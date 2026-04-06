@@ -38,10 +38,9 @@ const SignupScreen = ({ navigation }) => {
     };
 
     try {
-      //STEP 1: Check existing user
-      const existingUser = await getUserDetails();
+      const existingUser = await getUserDetails(email.trim());
 
-      if (existingUser && existingUser.email?.trim() === email.trim()) {
+      if (existingUser) {
         showAlert(
           "Account Exists",
           "An account with this email already exists. Please log in instead."
@@ -49,19 +48,8 @@ const SignupScreen = ({ navigation }) => {
         return;
       }
 
-      if (existingUser && existingUser.email?.trim() === email.trim()) {
-        showAlert(
-          "Account Exists",
-          "An account with this email already exists. Please log in instead."
-        );
-        return;
-      }
-      //STEP 2: Save new user
       await saveUserDetails(userDetails);
 
-      const savedData = await getUserDetails();
-      console.log("Saved User:", savedData);
-     //STEP 3: Show success and navigate
       showAlert("Success", "Registration successful!", () => {
         navigation.replace("Login");
       });

@@ -13,7 +13,7 @@ import homeStyles from "../styles/homeStyles";
 import { appImages } from "../constants/images";
 import { showAlert } from "../utils/alertHelper";
 import WorkoutCard from "../components/WorkoutCard";
-import { getUserDetails } from "../services/storageService";
+import { getCurrentUser } from "../services/storageService";
 
 const HomeScreen = ({ navigation }) => {
   const [userName, setUserName] = useState("User");
@@ -24,7 +24,7 @@ const HomeScreen = ({ navigation }) => {
     try {
       setLoadingUser(true);
 
-      const storedUser = await getUserDetails();
+      const storedUser = await getCurrentUser();
 
       if (storedUser) {
         setUserName(storedUser.userName || "User");
