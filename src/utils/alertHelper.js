@@ -8,7 +8,19 @@ export const showAlert = (title, message, onOk) => {
     Alert.alert(
       title,
       message,
-      onOk ? [{ text: "OK", onPress: onOk }] : undefined
+      onOk ? [{ text: "OK", onPress: onOk }] : [{ text: "OK" }]
     );
+  }
+};
+
+export const showConfirmAlert = (title, message, onConfirm) => {
+  if (Platform.OS === "web") {
+    const confirmed = window.confirm(`${title}\n\n${message}`);
+    if (confirmed && onConfirm) onConfirm();
+  } else {
+    Alert.alert(title, message, [
+      { text: "Cancel", style: "cancel" },
+      { text: "Delete", style: "destructive", onPress: onConfirm },
+    ]);
   }
 };

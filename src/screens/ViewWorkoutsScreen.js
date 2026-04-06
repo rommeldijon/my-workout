@@ -1,10 +1,18 @@
 import React, { useCallback } from "react";
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+  Platform,
+} from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 
 import useWorkouts from "../hooks/useWorkouts";
 import workoutStyles from "../styles/workoutStyles";
 import WorkoutCard from "../components/WorkoutCard";
+import { deleteWorkout } from "../services/storageService";
 
 const ViewWorkoutsScreen = ({ navigation }) => {
   const { data: workouts, loading, error, refetch } = useWorkouts();
@@ -17,6 +25,48 @@ const ViewWorkoutsScreen = ({ navigation }) => {
 
   const handleWorkoutPress = (workout) => {
     navigation.navigate("WorkoutDetail", { item: workout });
+  };
+
+  const handleDeleteWorkout = async (workoutId) => {
+    try {
+      await deleteWorkout(workoutId);
+      await refetch();
+
+      if (Platform.OS === "web") {
+        window.alert("Workout deleted successfully.");
+      } else {
+        Alert.alert("Success", "Workout deleted successfully.");
+      }
+    } catch (err) {
+      if (Platform.OS === "web") {
+        window.alert("Failed to delete workout.");
+      } else {
+        Alert.alert("Error", "Failed to delete workout.");
+      }
+    }
+  };
+
+  const confirmDeleteWorkout = (workoutId, workoutTitle) => {
+    const message = `Are you sure you want to delete "${workoutTitle}"?`;
+
+    if (Platform.OS === "web") {
+      const confirmed = window.confirm(message);
+      if (confirmed) {
+        handleDeleteWorkout(workoutId);
+      }
+    } else {
+      Alert.alert("Delete Workout", message, [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => handleDeleteWorkout(workoutId),
+        },
+      ]);
+    }
   };
 
   return (
@@ -46,6 +96,7 @@ const ViewWorkoutsScreen = ({ navigation }) => {
               key={item.id}
               item={item}
               onPress={handleWorkoutPress}
+              onDelete={confirmDeleteWorkout}
               showCategory={true}
               showStatus={true}
             />

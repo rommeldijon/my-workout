@@ -70,12 +70,22 @@ const workoutStyles = StyleSheet.create({
     marginBottom: 8,
     lineHeight: 22,
   },
+  workoutCategory: {
+    fontSize: 14,
+    color: "#666",
+    marginTop: 6,
+  },
+  workoutStatus: {
+    fontSize: 14,
+    color: "#444",
+    marginTop: 6,
+    fontWeight: "600",
+  },
   workoutMeta: {
     fontSize: 14,
     color: colors.gray,
     marginBottom: 2,
   },
-
   workoutImage: {
     width: "100%",
     height: 120,
@@ -187,6 +197,19 @@ const workoutStyles = StyleSheet.create({
   cancelButtonText: {
     color: colors.white,
     fontSize: 18,
+    fontWeight: "bold",
+  },
+  deleteButton: {
+    marginTop: 12,
+    backgroundColor: "#D9534F",
+    paddingVertical: 10,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+
+  deleteButtonText: {
+    color: "#FFFFFF",
+    fontSize: 15,
     fontWeight: "bold",
   },
 });

@@ -1,51 +1,51 @@
 import React from "react";
-import { TouchableOpacity, Text, Image, View } from "react-native";
-
+import { View, Text, TouchableOpacity, Image } from "react-native";
 import workoutStyles from "../styles/workoutStyles";
 
 const WorkoutCard = ({
   item,
   onPress,
-  variant = "default",
-  showCategory = true,
+  onDelete,
+  showCategory = false,
   showStatus = false,
 }) => {
-  const cardStyle =
-    variant === "horizontal"
-      ? workoutStyles.horizontalWorkoutCard
-      : variant === "done"
-      ? workoutStyles.doneWorkoutCard
-      : workoutStyles.workoutCard;
-
-  const imageStyle =
-    variant === "horizontal"
-      ? workoutStyles.horizontalWorkoutImage
-      : workoutStyles.workoutImage;
-
   return (
-    <TouchableOpacity style={cardStyle} onPress={() => onPress(item)}>
-      {item?.image ? <Image source={item.image} style={imageStyle} /> : null}
+    <View style={workoutStyles.workoutCard}>
+      <TouchableOpacity onPress={() => onPress(item)} activeOpacity={0.8}>
+        {item.image ? (
+          <Image source={item.image} style={workoutStyles.workoutImage} />
+        ) : null}
 
-      <Text style={workoutStyles.workoutTitle}>
-        {item?.title || "Untitled Workout"}
-      </Text>
+        <Text style={workoutStyles.workoutTitle}>{item.title}</Text>
 
-      <Text style={workoutStyles.workoutDescription}>
-        {item?.description || "No description available"}
-      </Text>
+        {item.description ? (
+          <Text style={workoutStyles.workoutDescription}>
+            {item.description}
+          </Text>
+        ) : null}
 
-      {showCategory ? (
-        <Text style={workoutStyles.workoutMeta}>
-          Category: {item?.category || "N/A"}
-        </Text>
+        {showCategory && item.category ? (
+          <Text style={workoutStyles.workoutCategory}>
+            Category: {item.category}
+          </Text>
+        ) : null}
+
+        {showStatus ? (
+          <Text style={workoutStyles.workoutStatus}>
+            Status: {item.completed ? "Completed" : "Not Completed"}
+          </Text>
+        ) : null}
+      </TouchableOpacity>
+
+      {onDelete ? (
+        <TouchableOpacity
+          style={workoutStyles.deleteButton}
+          onPress={() => onDelete(item.id, item.title)}
+        >
+          <Text style={workoutStyles.deleteButtonText}>Delete</Text>
+        </TouchableOpacity>
       ) : null}
-
-      {showStatus ? (
-        <Text style={workoutStyles.workoutMeta}>
-          Status: {item?.completed ? "Done" : "To Do"}
-        </Text>
-      ) : null}
-    </TouchableOpacity>
+    </View>
   );
 };
 

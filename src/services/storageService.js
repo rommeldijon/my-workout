@@ -21,9 +21,11 @@ export const getUserDetails = async (email) => {
 
   if (!email) return null;
 
-  return users.find(
-    (user) => user.email.trim().toLowerCase() === email.trim().toLowerCase()
-  ) || null;
+  return (
+    users.find(
+      (user) => user.email.trim().toLowerCase() === email.trim().toLowerCase()
+    ) || null
+  );
 };
 
 export const saveLoggedInUser = async (email) => {
@@ -70,6 +72,15 @@ export const saveWorkouts = async (workouts) => {
 export const addWorkout = async (newWorkout) => {
   const existingWorkouts = await getWorkouts();
   const updatedWorkouts = [...existingWorkouts, newWorkout];
+  await saveWorkouts(updatedWorkouts);
+  return updatedWorkouts;
+};
+
+export const deleteWorkout = async (workoutId) => {
+  const existingWorkouts = await getWorkouts();
+  const updatedWorkouts = existingWorkouts.filter(
+    (workout) => workout.id !== workoutId
+  );
   await saveWorkouts(updatedWorkouts);
   return updatedWorkouts;
 };
