@@ -7,7 +7,7 @@ import { getWorkouts, saveWorkouts } from "../services/storageService";
 const attachImages = (items) => {
   return items.map((item) => ({
     ...item,
-    image: getExerciseImage(item.imageKey),
+    image: item.imageKey ? getExerciseImage(item.imageKey) : null,
   }));
 };
 
@@ -32,6 +32,7 @@ const useWorkouts = () => {
     } catch (err) {
       console.log("useWorkouts error:", err);
       setError("Failed to load workouts.");
+      setData([]);
     } finally {
       setLoading(false);
     }

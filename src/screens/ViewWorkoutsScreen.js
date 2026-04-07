@@ -1,11 +1,10 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   ScrollView,
-  Alert,
-  Platform,
+  Modal,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 
@@ -13,9 +12,14 @@ import useWorkouts from "../hooks/useWorkouts";
 import workoutStyles from "../styles/workoutStyles";
 import WorkoutCard from "../components/WorkoutCard";
 import { deleteWorkout } from "../services/storageService";
+import { showAlert } from "../utils/alertHelper";
 
 const ViewWorkoutsScreen = ({ navigation }) => {
   const { data: workouts, loading, error, refetch } = useWorkouts();
+
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [selectedWorkoutId, setSelectedWorkoutId] = useState(null);
+  const [selectedWorkoutTitle, setSelectedWorkoutTitle] = useState("");
 
   useFocusEffect(
     useCallback(() => {
@@ -24,48 +28,43 @@ const ViewWorkoutsScreen = ({ navigation }) => {
   );
 
   const handleWorkoutPress = (workout) => {
-    navigation.navigate("WorkoutDetail", { item: workout });
+    navigation.navigate("WorkoutDetail", {
+      item: {
+        id: workout.id,
+        title: workout.title,
+        description: workout.description,
+        category: workout.category,
+        completed: workout.completed,
+        imageKey: workout.imageKey || null,
+      },
+    });
   };
 
-  const handleDeleteWorkout = async (workoutId) => {
+  const openDeleteModal = (workoutId, workoutTitle) => {
+    setSelectedWorkoutId(workoutId);
+    setSelectedWorkoutTitle(workoutTitle);
+    setDeleteModalVisible(true);
+  };
+
+  const closeDeleteModal = () => {
+    setDeleteModalVisible(false);
+    setSelectedWorkoutId(null);
+    setSelectedWorkoutTitle("");
+  };
+
+  const handleDeleteWorkout = async () => {
     try {
-      await deleteWorkout(workoutId);
+      if (!selectedWorkoutId) return;
+
+      await deleteWorkout(selectedWorkoutId);
       await refetch();
 
-      if (Platform.OS === "web") {
-        window.alert("Workout deleted successfully.");
-      } else {
-        Alert.alert("Success", "Workout deleted successfully.");
-      }
+      closeDeleteModal();
+      showAlert("Success", "Workout deleted successfully.");
     } catch (err) {
-      if (Platform.OS === "web") {
-        window.alert("Failed to delete workout.");
-      } else {
-        Alert.alert("Error", "Failed to delete workout.");
-      }
-    }
-  };
-
-  const confirmDeleteWorkout = (workoutId, workoutTitle) => {
-    const message = `Are you sure you want to delete "${workoutTitle}"?`;
-
-    if (Platform.OS === "web") {
-      const confirmed = window.confirm(message);
-      if (confirmed) {
-        handleDeleteWorkout(workoutId);
-      }
-    } else {
-      Alert.alert("Delete Workout", message, [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: () => handleDeleteWorkout(workoutId),
-        },
-      ]);
+      console.log("Delete workout error:", err);
+      closeDeleteModal();
+      showAlert("Error", "Failed to delete workout.");
     }
   };
 
@@ -96,7 +95,7 @@ const ViewWorkoutsScreen = ({ navigation }) => {
               key={item.id}
               item={item}
               onPress={handleWorkoutPress}
-              onDelete={confirmDeleteWorkout}
+              onDelete={openDeleteModal}
               showCategory={true}
               showStatus={true}
             />
@@ -110,6 +109,39 @@ const ViewWorkoutsScreen = ({ navigation }) => {
           <Text style={workoutStyles.backButtonText}>Back to Home</Text>
         </TouchableOpacity>
       </ScrollView>
+
+      <Modal
+        visible={deleteModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={closeDeleteModal}
+      >
+        <View style={workoutStyles.modalOverlay}>
+          <View style={workoutStyles.modalContainer}>
+            <Text style={workoutStyles.modalTitle}>Delete Workout</Text>
+
+            <Text style={workoutStyles.modalMessage}>
+              Are you sure you want to delete "{selectedWorkoutTitle}"?
+            </Text>
+
+            <View style={workoutStyles.modalButtonRow}>
+              <TouchableOpacity
+                style={workoutStyles.modalCancelButton}
+                onPress={closeDeleteModal}
+              >
+                <Text style={workoutStyles.modalCancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={workoutStyles.modalDeleteButton}
+                onPress={handleDeleteWorkout}
+              >
+                <Text style={workoutStyles.modalDeleteButtonText}>Delete</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };

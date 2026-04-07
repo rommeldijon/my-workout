@@ -29,7 +29,7 @@ export const getUserDetails = async (email) => {
 };
 
 export const saveLoggedInUser = async (email) => {
-  await AsyncStorage.setItem(storageKeys.loggedInUser, email);
+  await AsyncStorage.setItem(storageKeys.loggedInUser, email.trim().toLowerCase());
 };
 
 export const getLoggedInUser = async () => {
@@ -48,24 +48,50 @@ export const getCurrentUser = async () => {
   return await getUserDetails(loggedInEmail);
 };
 
+const getAllWorkoutsMap = async () => {
+  const storedWorkouts = await AsyncStorage.getItem(storageKeys.workouts);
+
+  if (!storedWorkouts) {
+    return {};
+  }
+
+  const parsedWorkouts = JSON.parse(storedWorkouts);
+
+  // Old format: plain array of workouts
+  if (Array.isArray(parsedWorkouts)) {
+    const loggedInEmail = await getLoggedInUser();
+
+    if (!loggedInEmail) {
+      return {};
+    }
+
+    return {
+      [loggedInEmail]: parsedWorkouts,
+    };
+  }
+
+  // New format: object keyed by email
+  return parsedWorkouts || {};
+};
+
 export const getWorkouts = async () => {
   const loggedInEmail = await getLoggedInUser();
-  const storedWorkouts = await AsyncStorage.getItem(storageKeys.workouts);
-  const allWorkouts = storedWorkouts ? JSON.parse(storedWorkouts) : {};
 
   if (!loggedInEmail) return [];
+
+  const allWorkouts = await getAllWorkoutsMap();
 
   return allWorkouts[loggedInEmail] || [];
 };
 
 export const saveWorkouts = async (workouts) => {
   const loggedInEmail = await getLoggedInUser();
-  const storedWorkouts = await AsyncStorage.getItem(storageKeys.workouts);
-  const allWorkouts = storedWorkouts ? JSON.parse(storedWorkouts) : {};
 
   if (!loggedInEmail) return;
 
+  const allWorkouts = await getAllWorkoutsMap();
   allWorkouts[loggedInEmail] = workouts;
+
   await AsyncStorage.setItem(storageKeys.workouts, JSON.stringify(allWorkouts));
 };
 

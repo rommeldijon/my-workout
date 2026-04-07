@@ -216,6 +216,73 @@ const workoutStyles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "bold",
   },
+  modalOverlay: {
+  flex: 1,
+  backgroundColor: "rgba(0, 0, 0, 0.45)",
+  justifyContent: "center",
+  alignItems: "center",
+  padding: 24,
+},
+
+modalContainer: {
+  width: "100%",
+  maxWidth: 360,
+  backgroundColor: colors.white,
+  borderRadius: 16,
+  padding: 22,
+  elevation: 5,
+},
+
+modalTitle: {
+  fontSize: 22,
+  fontWeight: "bold",
+  color: colors.black,
+  marginBottom: 12,
+  textAlign: "center",
+},
+
+modalMessage: {
+  fontSize: 16,
+  color: "#555",
+  lineHeight: 24,
+  textAlign: "center",
+  marginBottom: 20,
+},
+
+modalButtonRow: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  gap: 10,
+},
+
+modalCancelButton: {
+  flex: 1,
+  backgroundColor: "#E0E0E0",
+  paddingVertical: 12,
+  borderRadius: 10,
+  alignItems: "center",
+},
+
+modalCancelButtonText: {
+  fontSize: 16,
+  fontWeight: "bold",
+  color: "#333",
+},
+
+modalDeleteButton: {
+  flex: 1,
+  backgroundColor: "#D9534F",
+  paddingVertical: 12,
+  borderRadius: 10,
+  alignItems: "center",
+},
+
+modalDeleteButtonText: {
+  fontSize: 16,
+  fontWeight: "bold",
+  color: colors.white,
+},
+
 });
 
 export default workoutStyles;
