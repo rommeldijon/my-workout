@@ -45,9 +45,9 @@ const workoutStyles = StyleSheet.create({
   horizontalWorkoutCard: {
     backgroundColor: colors.white,
     borderRadius: 12,
-    padding: 12,
-    marginRight: 12,
-    width: 180,
+    padding: 10,
+    marginRight: 10,
+    width: 140,
     elevation: 2,
   },
   doneWorkoutCard: {
@@ -91,15 +91,19 @@ const workoutStyles = StyleSheet.create({
     height: 120,
     borderRadius: 10,
     marginBottom: 12,
-    resizeMode: "contain",
     alignSelf: "center",
+  },
+  horizontalWorkoutTitle: {
+    fontSize: 15,
+    fontWeight: "bold",
+    color: colors.black,
+    textAlign: "center",
   },
   horizontalWorkoutImage: {
     width: "100%",
     height: 70,
     borderRadius: 10,
     marginBottom: 8,
-    resizeMode: "contain",
     alignSelf: "center",
   },
 

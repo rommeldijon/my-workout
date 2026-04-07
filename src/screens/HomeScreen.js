@@ -67,7 +67,16 @@ const HomeScreen = ({ navigation }) => {
   };
 
   const handleWorkoutPress = (workout) => {
-    navigation.navigate("WorkoutDetail", { item: workout });
+    navigation.navigate("WorkoutDetail", {
+      item: {
+        id: workout.id,
+        title: workout.title,
+        description: workout.description,
+        category: workout.category,
+        completed: workout.completed,
+        imageKey: workout.imageKey || null,
+      },
+    });
   };
 
   const todoWorkouts = workouts.filter((item) => !item.completed);
@@ -204,10 +213,7 @@ const HomeScreen = ({ navigation }) => {
                 onPress={() => handleWorkoutPress(item)}
               >
                 {item.image && (
-                  <Image
-                    source={item.image}
-                    style={homeStyles.workoutImage}
-                  />
+                  <Image source={item.image} style={homeStyles.workoutImage} />
                 )}
 
                 <Text style={homeStyles.workoutTitle}>{item.title}</Text>
