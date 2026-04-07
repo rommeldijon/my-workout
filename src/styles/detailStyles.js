@@ -50,7 +50,6 @@ const detailStyles = StyleSheet.create({
     height: 120,
     borderRadius: 10,
     marginBottom: 12,
-    resizeMode: "contain",
     alignSelf: "center",
   },
 });

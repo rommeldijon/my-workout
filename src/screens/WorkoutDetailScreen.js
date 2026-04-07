@@ -58,4 +58,4 @@ const WorkoutDetailScreen = ({ route, navigation }) => {
   );
 };
 
-export default WorkoutDetailScreen;
+export default WorkoutDetailScreen;S
