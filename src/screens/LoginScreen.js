@@ -58,7 +58,7 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <View style={authStyles.container}>
-      <Image source={appImages.logo} style={authStyles.logo} />
+      <Image source={appImages.logo} resizeMode="contain" style={authStyles.logo} />
 
       <Text style={authStyles.title}>Login</Text>
 

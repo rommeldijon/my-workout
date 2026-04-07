@@ -100,7 +100,7 @@ const HomeScreen = ({ navigation }) => {
             <Text style={homeStyles.headerIcon}>☰</Text>
           </TouchableOpacity>
 
-          <Image source={appImages.logo} style={homeStyles.headerLogo} />
+          <Image source={appImages.logo} resizeMode="contain" style={homeStyles.headerLogo} />
 
           <TouchableOpacity
             style={homeStyles.headerButton}
@@ -213,7 +213,7 @@ const HomeScreen = ({ navigation }) => {
                 onPress={() => handleWorkoutPress(item)}
               >
                 {item.image && (
-                  <Image source={item.image} style={homeStyles.workoutImage} />
+                  <Image source={item.image} resizeMode="contain" style={homeStyles.workoutImage} />
                 )}
 
                 <Text style={homeStyles.workoutTitle}>{item.title}</Text>

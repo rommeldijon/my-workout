@@ -35,7 +35,6 @@ const homeStyles = StyleSheet.create({
   headerLogo: {
     width: 45,
     height: 45,
-    resizeMode: "contain",
   },
   welcomeCard: {
     backgroundColor: colors.white,
@@ -127,7 +126,6 @@ const homeStyles = StyleSheet.create({
     height: 100,
     borderRadius: 10,
     marginBottom: 10,
-    resizeMode: "contain",
     alignSelf: "center",
   },
   horizontalWorkoutImage: {
@@ -135,7 +133,6 @@ const homeStyles = StyleSheet.create({
     height: 80,
     borderRadius: 10,
     marginBottom: 8,
-    resizeMode: "contain",
     alignSelf: "center",
   },
   workoutTitle: {
