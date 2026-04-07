@@ -21,11 +21,7 @@ const ViewWorkoutsScreen = ({ navigation }) => {
   const [selectedWorkoutId, setSelectedWorkoutId] = useState(null);
   const [selectedWorkoutTitle, setSelectedWorkoutTitle] = useState("");
 
-  useFocusEffect(
-    useCallback(() => {
-      refetch();
-    }, [refetch])
-  );
+  useFocusEffect(refetch);
 
   const handleWorkoutPress = (workout) => {
     navigation.navigate("WorkoutDetail", {
