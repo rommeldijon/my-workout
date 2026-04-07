@@ -85,6 +85,10 @@ const HomeScreen = ({ navigation }) => {
   );
   const doneWorkouts = workouts.filter((item) => item.completed);
 
+  const handleEditWorkout = (workout) => {
+    navigation.navigate("EditWorkout", { item: workout });
+  };
+
   return (
     <View style={homeStyles.container}>
       <ScrollView
@@ -164,6 +168,7 @@ const HomeScreen = ({ navigation }) => {
                 key={item.id}
                 item={item}
                 onPress={handleWorkoutPress}
+                onEdit={handleEditWorkout}
                 showCategory={false}
                 showStatus={false}
               />
@@ -189,6 +194,7 @@ const HomeScreen = ({ navigation }) => {
                   key={item.id}
                   item={item}
                   onPress={handleWorkoutPress}
+                  onEdit={handleEditWorkout}
                   variant="horizontal"
                   showCategory={false}
                   showStatus={false}

@@ -10,6 +10,7 @@ import AddWorkoutScreen from "../screens/AddWorkoutScreen";
 import ViewWorkoutsScreen from "../screens/ViewWorkoutsScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import CustomDrawerContent from "../components/CustomDrawerContent";
+import EditWorkoutScreen from "../screens/EditWorkoutScreen";
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -72,6 +73,12 @@ export default function AppNavigator() {
         name="WorkoutDetail"
         component={WorkoutDetailScreen}
         options={{ title: "Workout Detail", headerShown: true }}
+      />
+
+      <Stack.Screen
+        name="EditWorkout"
+        component={EditWorkoutScreen}
+        options={{ title: "Edit Workout" }}
       />
     </Stack.Navigator>
   );

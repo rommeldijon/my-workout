@@ -15,6 +15,9 @@ import { showAlert } from "../utils/alertHelper";
 
 const WorkoutDetailScreen = ({ route, navigation }) => {
   const { item } = route.params || {};
+  const handleEditWorkout = () => {
+    navigation.navigate("EditWorkout", { item });
+  };
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
   const workoutImage = item?.imageKey ? getExerciseImage(item.imageKey) : null;
@@ -92,6 +95,13 @@ const WorkoutDetailScreen = ({ route, navigation }) => {
         </TouchableOpacity>
 
         <TouchableOpacity
+          style={detailStyles.editButton}
+          onPress={handleEditWorkout}
+        >
+          <Text style={detailStyles.editButtonText}>Edit Workout</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
           style={detailStyles.backButton}
           onPress={() => navigation.goBack()}
         >
@@ -127,6 +137,7 @@ const WorkoutDetailScreen = ({ route, navigation }) => {
               >
                 <Text style={detailStyles.modalDeleteButtonText}>Delete</Text>
               </TouchableOpacity>
+
             </View>
           </View>
         </View>

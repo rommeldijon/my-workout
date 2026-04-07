@@ -21,7 +21,11 @@ const ViewWorkoutsScreen = ({ navigation }) => {
   const [selectedWorkoutId, setSelectedWorkoutId] = useState(null);
   const [selectedWorkoutTitle, setSelectedWorkoutTitle] = useState("");
 
-  useFocusEffect(refetch);
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
 
   const handleWorkoutPress = (workout) => {
     navigation.navigate("WorkoutDetail", {
@@ -34,6 +38,10 @@ const ViewWorkoutsScreen = ({ navigation }) => {
         imageKey: workout.imageKey || null,
       },
     });
+  };
+
+  const handleEditWorkout = (workout) => {
+    navigation.navigate("EditWorkout", { item: workout });
   };
 
   const openDeleteModal = (workoutId, workoutTitle) => {
@@ -92,6 +100,7 @@ const ViewWorkoutsScreen = ({ navigation }) => {
               item={item}
               onPress={handleWorkoutPress}
               onDelete={openDeleteModal}
+              onEdit={handleEditWorkout}
               showCategory={true}
               showStatus={true}
             />
