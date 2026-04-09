@@ -283,6 +283,41 @@ modalDeleteButtonText: {
   color: colors.white,
 },
 
+  label: {
+    fontSize: 14,
+    fontWeight: "600",
+    marginTop: 10,
+    marginBottom: 4,
+    color: "#333",
+  },
+  inlineInput: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    backgroundColor: "#fff",
+    marginBottom: 8,
+  },
+  inlineMultiline: {
+    minHeight: 80,
+    textAlignVertical: "top",
+  },
+  cardActionRow: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    gap: 10,
+    marginTop: 12,
+  },
+  cardIconButton: {
+    backgroundColor: "#4A90E2",
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
 });
 
 export default workoutStyles;

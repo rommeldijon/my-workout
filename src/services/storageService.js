@@ -29,7 +29,10 @@ export const getUserDetails = async (email) => {
 };
 
 export const saveLoggedInUser = async (email) => {
-  await AsyncStorage.setItem(storageKeys.loggedInUser, email.trim().toLowerCase());
+  await AsyncStorage.setItem(
+    storageKeys.loggedInUser,
+    email.trim().toLowerCase()
+  );
 };
 
 export const getLoggedInUser = async () => {
@@ -57,7 +60,7 @@ const getAllWorkoutsMap = async () => {
 
   const parsedWorkouts = JSON.parse(storedWorkouts);
 
-  // Old format: plain array of workouts
+  // Support old data format where workouts were stored as one plain array.
   if (Array.isArray(parsedWorkouts)) {
     const loggedInEmail = await getLoggedInUser();
 
@@ -70,7 +73,7 @@ const getAllWorkoutsMap = async () => {
     };
   }
 
-  // New format: object keyed by email
+  // New format: workouts grouped by logged-in user's email.
   return parsedWorkouts || {};
 };
 
@@ -102,11 +105,24 @@ export const addWorkout = async (newWorkout) => {
   return updatedWorkouts;
 };
 
+export const updateWorkout = async (updatedWorkout) => {
+  const existingWorkouts = await getWorkouts();
+
+  const updatedWorkouts = existingWorkouts.map((workout) =>
+    workout.id === updatedWorkout.id ? updatedWorkout : workout
+  );
+
+  await saveWorkouts(updatedWorkouts);
+  return updatedWorkouts;
+};
+
 export const deleteWorkout = async (workoutId) => {
   const existingWorkouts = await getWorkouts();
+
   const updatedWorkouts = existingWorkouts.filter(
     (workout) => workout.id !== workoutId
   );
+
   await saveWorkouts(updatedWorkouts);
   return updatedWorkouts;
 };

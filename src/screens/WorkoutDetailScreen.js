@@ -6,21 +6,35 @@ import {
   ScrollView,
   Image,
   Modal,
+  TextInput,
 } from "react-native";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 import detailStyles from "../styles/detailStyles";
 import { getExerciseImage } from "../constants/images";
-import { deleteWorkout } from "../services/storageService";
+import { deleteWorkout, updateWorkout } from "../services/storageService";
 import { showAlert } from "../utils/alertHelper";
 
 const WorkoutDetailScreen = ({ route, navigation }) => {
   const { item } = route.params || {};
-  const handleEditWorkout = () => {
-    navigation.navigate("EditWorkout", { item });
-  };
+
+  // Local edit mode state.
+  const [isEditing, setIsEditing] = useState(false);
+
+  // Local workout state so the screen updates immediately after save.
+  const [workout, setWorkout] = useState(item || {});
+
+  // Editable field state.
+  const [editedTitle, setEditedTitle] = useState(item?.title || "");
+  const [editedDescription, setEditedDescription] = useState(
+    item?.description || ""
+  );
+  const [editedCategory, setEditedCategory] = useState(item?.category || "");
+
+  // Delete confirmation modal state.
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
-  const workoutImage = item?.imageKey ? getExerciseImage(item.imageKey) : null;
+  const workoutImage = workout?.imageKey ? getExerciseImage(workout.imageKey) : null;
 
   const openDeleteModal = () => {
     setDeleteModalVisible(true);
@@ -30,11 +44,54 @@ const WorkoutDetailScreen = ({ route, navigation }) => {
     setDeleteModalVisible(false);
   };
 
+  const handleStartEdit = () => {
+    // Reset edit fields to current saved values before entering edit mode.
+    setEditedTitle(workout?.title || "");
+    setEditedDescription(workout?.description || "");
+    setEditedCategory(workout?.category || "");
+    setIsEditing(true);
+  };
+
+  const handleCancelEdit = () => {
+    // Restore the text fields to last saved values.
+    setEditedTitle(workout?.title || "");
+    setEditedDescription(workout?.description || "");
+    setEditedCategory(workout?.category || "");
+    setIsEditing(false);
+  };
+
+  const handleSaveWorkout = async () => {
+    try {
+      if (!workout?.id) return;
+
+      if (!editedTitle.trim()) {
+        showAlert("Validation Error", "Title is required.");
+        return;
+      }
+
+      const updatedWorkout = {
+        ...workout,
+        title: editedTitle.trim(),
+        description: editedDescription.trim(),
+        category: editedCategory.trim(),
+      };
+
+      await updateWorkout(updatedWorkout);
+      setWorkout(updatedWorkout);
+      setIsEditing(false);
+
+      showAlert("Success", "Workout updated successfully.");
+    } catch (error) {
+      console.log("Update workout error:", error);
+      showAlert("Error", "Failed to update workout.");
+    }
+  };
+
   const handleDeleteWorkout = async () => {
     try {
-      if (!item?.id) return;
+      if (!workout?.id) return;
 
-      await deleteWorkout(item.id);
+      await deleteWorkout(workout.id);
       closeDeleteModal();
 
       showAlert("Success", "Workout deleted successfully.", () => {
@@ -62,51 +119,105 @@ const WorkoutDetailScreen = ({ route, navigation }) => {
           ) : null}
 
           <Text style={detailStyles.label}>Title</Text>
-          <Text style={detailStyles.value}>
-            {item?.title || "No title available"}
-          </Text>
+          {isEditing ? (
+            <TextInput
+              value={editedTitle}
+              onChangeText={setEditedTitle}
+              style={detailStyles.input}
+              placeholder="Enter workout title"
+            />
+          ) : (
+            <Text style={detailStyles.value}>
+              {workout?.title || "No title available"}
+            </Text>
+          )}
 
           <Text style={detailStyles.label}>Description</Text>
-          <Text style={detailStyles.value}>
-            {item?.description || "No description available"}
-          </Text>
+          {isEditing ? (
+            <TextInput
+              value={editedDescription}
+              onChangeText={setEditedDescription}
+              style={[detailStyles.input, detailStyles.multilineInput]}
+              placeholder="Enter workout description"
+              multiline
+            />
+          ) : (
+            <Text style={detailStyles.value}>
+              {workout?.description || "No description available"}
+            </Text>
+          )}
 
           <Text style={detailStyles.label}>Category</Text>
-          <Text style={detailStyles.value}>
-            {item?.category || "No category"}
-          </Text>
+          {isEditing ? (
+            <TextInput
+              value={editedCategory}
+              onChangeText={setEditedCategory}
+              style={detailStyles.input}
+              placeholder="Enter workout category"
+            />
+          ) : (
+            <Text style={detailStyles.value}>
+              {workout?.category || "No category"}
+            </Text>
+          )}
 
           <Text style={detailStyles.label}>Status</Text>
           <Text style={detailStyles.value}>
-            {item?.completed ? "Done" : "To Do"}
+            {workout?.completed ? "Done" : "To Do"}
           </Text>
 
           <Text style={detailStyles.label}>Workout ID</Text>
           <Text style={detailStyles.value}>
-            {item?.id || "No ID available"}
+            {workout?.id || "No ID available"}
           </Text>
         </View>
 
-        <TouchableOpacity
-          style={detailStyles.deleteButton}
-          onPress={openDeleteModal}
-        >
-          <Text style={detailStyles.deleteButtonText}>Delete Workout</Text>
-        </TouchableOpacity>
+        {/* Action buttons row */}
+        <View style={detailStyles.iconButtonRow}>
+          {!isEditing ? (
+            <TouchableOpacity
+              style={detailStyles.iconButton}
+              onPress={handleStartEdit}
+            >
+              <MaterialIcons name="edit" size={24} color="#ffffff" />
+              <Text style={detailStyles.iconButtonText}>Edit</Text>
+            </TouchableOpacity>
+          ) : (
+            <>
+              <TouchableOpacity
+                style={detailStyles.iconButton}
+                onPress={handleSaveWorkout}
+              >
+                <MaterialIcons name="save" size={24} color="#ffffff" />
+                <Text style={detailStyles.iconButtonText}>Save</Text>
+              </TouchableOpacity>
 
-        <TouchableOpacity
-          style={detailStyles.editButton}
-          onPress={handleEditWorkout}
-        >
-          <Text style={detailStyles.editButtonText}>Edit Workout</Text>
-        </TouchableOpacity>
+              <TouchableOpacity
+                style={detailStyles.iconButton}
+                onPress={handleCancelEdit}
+              >
+                <MaterialIcons name="cancel" size={24} color="#ffffff" />
+                <Text style={detailStyles.iconButtonText}>Cancel</Text>
+              </TouchableOpacity>
+            </>
+          )}
 
-        <TouchableOpacity
-          style={detailStyles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={detailStyles.backButtonText}>Previous</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={detailStyles.iconButton}
+            onPress={openDeleteModal}
+          >
+            <MaterialIcons name="delete" size={24} color="#ffffff" />
+            <Text style={detailStyles.iconButtonText}>Delete</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={detailStyles.iconButton}
+            onPress={() => navigation.goBack()}
+          >
+            <MaterialIcons name="arrow-back" size={24} color="#ffffff" />
+            <Text style={detailStyles.iconButtonText}>Back</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
 
       <Modal
@@ -120,7 +231,7 @@ const WorkoutDetailScreen = ({ route, navigation }) => {
             <Text style={detailStyles.modalTitle}>Delete Workout</Text>
 
             <Text style={detailStyles.modalMessage}>
-              Are you sure you want to delete "{item?.title}"?
+              Are you sure you want to delete "{workout?.title}"?
             </Text>
 
             <View style={detailStyles.modalButtonRow}>
@@ -137,7 +248,6 @@ const WorkoutDetailScreen = ({ route, navigation }) => {
               >
                 <Text style={detailStyles.modalDeleteButtonText}>Delete</Text>
               </TouchableOpacity>
-
             </View>
           </View>
         </View>

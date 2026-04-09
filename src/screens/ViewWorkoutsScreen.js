@@ -11,15 +11,19 @@ import { useFocusEffect } from "@react-navigation/native";
 import useWorkouts from "../hooks/useWorkouts";
 import workoutStyles from "../styles/workoutStyles";
 import WorkoutCard from "../components/WorkoutCard";
-import { deleteWorkout } from "../services/storageService";
+import { deleteWorkout, updateWorkout } from "../services/storageService";
 import { showAlert } from "../utils/alertHelper";
 
 const ViewWorkoutsScreen = ({ navigation }) => {
   const { data: workouts, loading, error, refetch } = useWorkouts();
 
+  // Delete modal state.
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [selectedWorkoutId, setSelectedWorkoutId] = useState(null);
   const [selectedWorkoutTitle, setSelectedWorkoutTitle] = useState("");
+
+  // Track which workout is currently being edited inline.
+  const [editingWorkoutId, setEditingWorkoutId] = useState(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -40,8 +44,37 @@ const ViewWorkoutsScreen = ({ navigation }) => {
     });
   };
 
-  const handleEditWorkout = (workout) => {
-    navigation.navigate("EditWorkout", { item: workout });
+  const handleStartEdit = (workout) => {
+    setEditingWorkoutId(workout.id);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingWorkoutId(null);
+  };
+
+  const handleSaveEdit = async (updatedWorkout) => {
+    try {
+      if (!updatedWorkout?.title?.trim()) {
+        showAlert("Validation Error", "Title is required.");
+        return;
+      }
+
+      const cleanedWorkout = {
+        ...updatedWorkout,
+        title: updatedWorkout.title.trim(),
+        description: updatedWorkout.description?.trim() || "",
+        category: updatedWorkout.category?.trim() || "",
+      };
+
+      await updateWorkout(cleanedWorkout);
+      setEditingWorkoutId(null);
+      await refetch();
+
+      showAlert("Success", "Workout updated successfully.");
+    } catch (err) {
+      console.log("Update workout error:", err);
+      showAlert("Error", "Failed to update workout.");
+    }
   };
 
   const openDeleteModal = (workoutId, workoutTitle) => {
@@ -62,6 +95,10 @@ const ViewWorkoutsScreen = ({ navigation }) => {
 
       await deleteWorkout(selectedWorkoutId);
       await refetch();
+
+      if (editingWorkoutId === selectedWorkoutId) {
+        setEditingWorkoutId(null);
+      }
 
       closeDeleteModal();
       showAlert("Success", "Workout deleted successfully.");
@@ -100,7 +137,10 @@ const ViewWorkoutsScreen = ({ navigation }) => {
               item={item}
               onPress={handleWorkoutPress}
               onDelete={openDeleteModal}
-              onEdit={handleEditWorkout}
+              onStartEdit={handleStartEdit}
+              onSave={handleSaveEdit}
+              onCancel={handleCancelEdit}
+              isEditing={editingWorkoutId === item.id}
               showCategory={true}
               showStatus={true}
             />

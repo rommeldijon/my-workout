@@ -130,6 +130,44 @@ const detailStyles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
+
+    input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    backgroundColor: "#fff",
+    marginBottom: 12,
+  },
+  multilineInput: {
+    minHeight: 90,
+    textAlignVertical: "top",
+  },
+  iconButtonRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    gap: 12,
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  iconButton: {
+    backgroundColor: "#4A90E2",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 10,
+    minWidth: 100,
+  },
+  iconButtonText: {
+    color: "#ffffff",
+    fontWeight: "600",
+    marginLeft: 6,
+  },
+  
 });
 
 export default detailStyles;
