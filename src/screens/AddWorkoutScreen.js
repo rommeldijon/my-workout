@@ -18,10 +18,11 @@ import { getExerciseImage } from "../constants/images";
 // Built-in image choices for the user.
 // The value must match the imageKey used in your images.js file.
 const IMAGE_OPTIONS = [
-  { label: "Push Up", value: "pushup" },
-  { label: "Squat", value: "squat" },
-  { label: "Jumping Jacks", value: "jumpingjacks" },
-  { label: "Plank", value: "plank" },
+  { label: "Arms", value: "arms" },
+  { label: "Legs", value: "legs" },
+  { label: "Back", value: "back" },
+  { label: "Core", value: "core" },
+  { label: "Cardio", value: "cardio" },
 ];
 
 // Small helper function to validate image URLs.
