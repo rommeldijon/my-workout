@@ -76,10 +76,18 @@ const workoutStyles = StyleSheet.create({
     marginTop: 6,
   },
   workoutStatus: {
-    fontSize: 14,
-    color: "#444",
-    marginTop: 6,
-    fontWeight: "600",
+  fontSize: 14,
+  marginTop: 6,
+  fontWeight: "600",
+  },
+  statusDone: {
+    color: "#2E7D32", // green
+  },
+  statusStarted: {
+    color: "#F9A825", // yellow/orange
+  },
+  statusTodo: {
+    color: "#555", // gray
   },
   workoutMeta: {
     fontSize: 14,
@@ -88,10 +96,11 @@ const workoutStyles = StyleSheet.create({
   },
   workoutImage: {
     width: "100%",
-    height: 120,
+    height: 140,
     borderRadius: 10,
     marginBottom: 12,
     alignSelf: "center",
+    backgroundColor: "#f0f0f0",
   },
   horizontalWorkoutTitle: {
     fontSize: 15,

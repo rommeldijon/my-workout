@@ -51,6 +51,20 @@ export const getCurrentUser = async () => {
   return await getUserDetails(loggedInEmail);
 };
 
+// Normalize workout objects so older data still works with the new app structure.
+const normalizeWorkout = (workout) => {
+  const currentStatus =
+    workout.status || (workout.completed ? "Done" : "To Do");
+
+  return {
+    ...workout,
+    status: currentStatus,
+    completed: currentStatus === "Done",
+    imageKey: workout.imageKey || "",
+    imageUri: workout.imageUri || "",
+  };
+};
+
 const getAllWorkoutsMap = async () => {
   const storedWorkouts = await AsyncStorage.getItem(storageKeys.workouts);
 
@@ -69,12 +83,18 @@ const getAllWorkoutsMap = async () => {
     }
 
     return {
-      [loggedInEmail]: parsedWorkouts,
+      [loggedInEmail]: parsedWorkouts.map(normalizeWorkout),
     };
   }
 
   // New format: workouts grouped by logged-in user's email.
-  return parsedWorkouts || {};
+  const normalizedMap = {};
+
+  Object.keys(parsedWorkouts || {}).forEach((email) => {
+    normalizedMap[email] = (parsedWorkouts[email] || []).map(normalizeWorkout);
+  });
+
+  return normalizedMap;
 };
 
 export const getWorkouts = async () => {
@@ -93,14 +113,14 @@ export const saveWorkouts = async (workouts) => {
   if (!loggedInEmail) return;
 
   const allWorkouts = await getAllWorkoutsMap();
-  allWorkouts[loggedInEmail] = workouts;
+  allWorkouts[loggedInEmail] = workouts.map(normalizeWorkout);
 
   await AsyncStorage.setItem(storageKeys.workouts, JSON.stringify(allWorkouts));
 };
 
 export const addWorkout = async (newWorkout) => {
   const existingWorkouts = await getWorkouts();
-  const updatedWorkouts = [...existingWorkouts, newWorkout];
+  const updatedWorkouts = [...existingWorkouts, normalizeWorkout(newWorkout)];
   await saveWorkouts(updatedWorkouts);
   return updatedWorkouts;
 };
@@ -109,7 +129,9 @@ export const updateWorkout = async (updatedWorkout) => {
   const existingWorkouts = await getWorkouts();
 
   const updatedWorkouts = existingWorkouts.map((workout) =>
-    workout.id === updatedWorkout.id ? updatedWorkout : workout
+    workout.id === updatedWorkout.id
+      ? normalizeWorkout(updatedWorkout)
+      : normalizeWorkout(workout)
   );
 
   await saveWorkouts(updatedWorkouts);

@@ -1,13 +1,9 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
- TouchableOpacity,
-  Image,
-  TextInput,
-} from "react-native";
+import { View, Text, TouchableOpacity, Image, TextInput } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+
 import workoutStyles from "../styles/workoutStyles";
+import { getExerciseImage } from "../constants/images";
 
 const WorkoutCard = ({
   item,
@@ -29,22 +25,46 @@ const WorkoutCard = ({
     item.description || ""
   );
   const [editedCategory, setEditedCategory] = useState(item.category || "");
+  const [editedStatus, setEditedStatus] = useState(
+    item.status || (item.completed ? "Done" : "To Do")
+  );
 
   useEffect(() => {
     setEditedTitle(item.title || "");
     setEditedDescription(item.description || "");
     setEditedCategory(item.category || "");
+    setEditedStatus(item.status || (item.completed ? "Done" : "To Do"));
   }, [item, isEditing]);
+
+  // Support both built-in local images and URL-based images.
+  const workoutImage = getExerciseImage(item.imageKey, item.imageUri);
+
+  // Read-only status used when not editing.
+  const currentStatus = item.status || (item.completed ? "Done" : "To Do");
 
   const handleSave = () => {
     if (!onSave) return;
 
     onSave({
       ...item,
-      title: editedTitle,
-      description: editedDescription,
-      category: editedCategory,
+      title: editedTitle.trim(),
+      description: editedDescription.trim(),
+      category: editedCategory.trim(),
+      status: editedStatus,
+      completed: editedStatus === "Done",
     });
+  };
+
+  const getStatusStyle = (status) => {
+    if (status === "Done") {
+      return workoutStyles.statusDone;
+    }
+
+    if (status === "Started") {
+      return workoutStyles.statusStarted;
+    }
+
+    return workoutStyles.statusTodo;
   };
 
   return (
@@ -63,17 +83,15 @@ const WorkoutCard = ({
         }}
         activeOpacity={0.8}
       >
-        {item.image ? (
-          <Image
-            source={item.image}
-            resizeMode="contain"
-            style={
-              isHorizontal
-                ? workoutStyles.horizontalWorkoutImage
-                : workoutStyles.workoutImage
-            }
-          />
-        ) : null}
+        <Image
+          source={workoutImage}
+          resizeMode={isHorizontal ? "contain" : "cover"}
+          style={
+            isHorizontal
+              ? workoutStyles.horizontalWorkoutImage
+              : workoutStyles.workoutImage
+          }
+        />
 
         {isEditing ? (
           <>
@@ -101,6 +119,71 @@ const WorkoutCard = ({
               style={workoutStyles.inlineInput}
               placeholder="Category"
             />
+
+            {showStatus ? (
+              <>
+                <Text style={workoutStyles.label}>Status</Text>
+
+                <View style={workoutStyles.statusContainer}>
+                  <TouchableOpacity
+                    style={[
+                      workoutStyles.statusButton,
+                      editedStatus === "To Do" &&
+                        workoutStyles.statusButtonActive,
+                    ]}
+                    onPress={() => setEditedStatus("To Do")}
+                  >
+                    <Text
+                      style={[
+                        workoutStyles.statusButtonText,
+                        editedStatus === "To Do" &&
+                          workoutStyles.statusButtonTextActive,
+                      ]}
+                    >
+                      To Do
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={[
+                      workoutStyles.statusButton,
+                      editedStatus === "Started" &&
+                        workoutStyles.statusButtonActive,
+                    ]}
+                    onPress={() => setEditedStatus("Started")}
+                  >
+                    <Text
+                      style={[
+                        workoutStyles.statusButtonText,
+                        editedStatus === "Started" &&
+                          workoutStyles.statusButtonTextActive,
+                      ]}
+                    >
+                      Started
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={[
+                      workoutStyles.statusButton,
+                      editedStatus === "Done" &&
+                        workoutStyles.statusButtonActive,
+                    ]}
+                    onPress={() => setEditedStatus("Done")}
+                  >
+                    <Text
+                      style={[
+                        workoutStyles.statusButtonText,
+                        editedStatus === "Done" &&
+                          workoutStyles.statusButtonTextActive,
+                      ]}
+                    >
+                      Done
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            ) : null}
           </>
         ) : (
           <>
@@ -127,8 +210,13 @@ const WorkoutCard = ({
             ) : null}
 
             {showStatus ? (
-              <Text style={workoutStyles.workoutStatus}>
-                Status: {item.completed ? "Completed" : "Not Completed"}
+              <Text
+                style={[
+                  workoutStyles.workoutStatus,
+                  getStatusStyle(currentStatus),
+                ]}
+              >
+                Status: {currentStatus}
               </Text>
             ) : null}
           </>

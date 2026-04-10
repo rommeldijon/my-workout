@@ -93,7 +93,9 @@ const HomeScreen = ({ navigation }) => {
         description: workout.description,
         category: workout.category,
         completed: workout.completed,
-        imageKey: workout.imageKey || null,
+        status: workout.status || (workout.completed ? "Done" : "To Do"),
+        imageKey: workout.imageKey || "",
+        imageUri: workout.imageUri || "",
       },
     });
   };
@@ -108,7 +110,9 @@ const HomeScreen = ({ navigation }) => {
         description: workout.description,
         category: workout.category,
         completed: workout.completed,
-        imageKey: workout.imageKey || null,
+        status: workout.status || (workout.completed ? "Done" : "To Do"),
+        imageKey: workout.imageKey || "",
+        imageUri: workout.imageUri || "",
       },
     });
   };
@@ -145,11 +149,20 @@ const HomeScreen = ({ navigation }) => {
   };
 
   // Build filtered workout sections for the Home screen.
-  const todoWorkouts = workouts.filter((item) => !item.completed);
+  // Support both the new status field and the older completed field.
+  const todoWorkouts = workouts.filter((item) => {
+    const currentStatus = item.status || (item.completed ? "Done" : "To Do");
+    return currentStatus !== "Done";
+  });
+
   const quickWarmUps = workouts.filter(
     (item) => item.category === "Quick Warm-ups"
   );
-  const doneWorkouts = workouts.filter((item) => item.completed);
+
+  const doneWorkouts = workouts.filter((item) => {
+    const currentStatus = item.status || (item.completed ? "Done" : "To Do");
+    return currentStatus === "Done";
+  });
 
   return (
     <View style={homeStyles.container}>
@@ -244,7 +257,7 @@ const HomeScreen = ({ navigation }) => {
                 onStartEdit={handleStartEdit}
                 onDelete={openDeleteModal}
                 showCategory={false}
-                showStatus={false}
+                showStatus={true}
               />
             ))
           ) : (
@@ -288,24 +301,15 @@ const HomeScreen = ({ navigation }) => {
 
           {doneWorkouts.length > 0 ? (
             doneWorkouts.map((item) => (
-              <TouchableOpacity
+              <WorkoutCard
                 key={item.id}
-                style={homeStyles.doneWorkoutCard}
-                onPress={() => handleWorkoutPress(item)}
-              >
-                {item.image && (
-                  <Image
-                    source={item.image}
-                    resizeMode="contain"
-                    style={homeStyles.workoutImage}
-                  />
-                )}
-
-                <Text style={homeStyles.workoutTitle}>{item.title}</Text>
-                <Text style={homeStyles.workoutDescription}>
-                  {item.description}
-                </Text>
-              </TouchableOpacity>
+                item={item}
+                onPress={handleWorkoutPress}
+                onStartEdit={handleStartEdit}
+                onDelete={openDeleteModal}
+                showCategory={false}
+                showStatus={true}
+              />
             ))
           ) : (
             <Text style={homeStyles.emptySectionText}>

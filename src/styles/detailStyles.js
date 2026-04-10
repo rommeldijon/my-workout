@@ -7,6 +7,7 @@ const detailStyles = StyleSheet.create({
     padding: 20,
     backgroundColor: "#F4F7FB",
   },
+
   header: {
     fontSize: 28,
     fontWeight: "bold",
@@ -14,6 +15,7 @@ const detailStyles = StyleSheet.create({
     marginBottom: 20,
     color: colors.black,
   },
+
   card: {
     backgroundColor: colors.white,
     borderRadius: 12,
@@ -21,6 +23,7 @@ const detailStyles = StyleSheet.create({
     marginBottom: 14,
     elevation: 2,
   },
+
   label: {
     fontSize: 14,
     fontWeight: "bold",
@@ -29,22 +32,13 @@ const detailStyles = StyleSheet.create({
     marginBottom: 4,
     textTransform: "uppercase",
   },
+
   value: {
     fontSize: 18,
     color: colors.black,
     lineHeight: 26,
   },
-  backButton: {
-    backgroundColor: "#2196F3",
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  backButtonText: {
-    color: colors.white,
-    fontSize: 17,
-    fontWeight: "bold",
-  },
+
   image: {
     width: "100%",
     height: 120,
@@ -52,6 +46,20 @@ const detailStyles = StyleSheet.create({
     marginBottom: 12,
     alignSelf: "center",
   },
+
+  backButton: {
+    backgroundColor: "#2196F3",
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+
+  backButtonText: {
+    color: colors.white,
+    fontSize: 17,
+    fontWeight: "bold",
+  },
+
   deleteButton: {
     backgroundColor: "#D9534F",
     paddingVertical: 14,
@@ -131,7 +139,7 @@ const detailStyles = StyleSheet.create({
     fontWeight: "bold",
   },
 
-    input: {
+  input: {
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 8,
@@ -139,11 +147,15 @@ const detailStyles = StyleSheet.create({
     paddingVertical: 8,
     backgroundColor: "#fff",
     marginBottom: 12,
+    fontSize: 16,
+    color: colors.black,
   },
+
   multilineInput: {
     minHeight: 90,
     textAlignVertical: "top",
   },
+
   iconButtonRow: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -152,6 +164,7 @@ const detailStyles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 20,
   },
+
   iconButton: {
     backgroundColor: "#4A90E2",
     flexDirection: "row",
@@ -162,12 +175,44 @@ const detailStyles = StyleSheet.create({
     borderRadius: 10,
     minWidth: 100,
   },
+
   iconButtonText: {
     color: "#ffffff",
     fontWeight: "600",
     marginLeft: 6,
   },
-  
+
+  // New styles for the 3-state status selector in edit mode
+  statusContainer: {
+    flexDirection: "row",
+    backgroundColor: "#E9EEF5",
+    borderRadius: 12,
+    padding: 4,
+    marginBottom: 12,
+    marginTop: 4,
+  },
+
+  statusButton: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  statusButtonActive: {
+    backgroundColor: "#4A90E2",
+  },
+
+  statusButtonText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#444",
+  },
+
+  statusButtonTextActive: {
+    color: "#FFFFFF",
+  },
 });
 
 export default detailStyles;

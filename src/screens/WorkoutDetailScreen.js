@@ -18,23 +18,32 @@ import { showAlert } from "../utils/alertHelper";
 const WorkoutDetailScreen = ({ route, navigation }) => {
   const { item } = route.params || {};
 
-  // Local edit mode state.
+  // Controls whether the screen is in edit mode.
   const [isEditing, setIsEditing] = useState(false);
 
-  // Local workout state so the screen updates immediately after save.
+  // Local workout state so the UI updates immediately after saving changes.
   const [workout, setWorkout] = useState(item || {});
 
-  // Editable field state.
+  // Editable text field state.
   const [editedTitle, setEditedTitle] = useState(item?.title || "");
   const [editedDescription, setEditedDescription] = useState(
     item?.description || ""
   );
   const [editedCategory, setEditedCategory] = useState(item?.category || "");
 
+  // Editable status field.
+  // Supports the new 3-state flow: To Do, Started, Done.
+  const [editedStatus, setEditedStatus] = useState(
+    item?.status || (item?.completed ? "Done" : "To Do")
+  );
+
   // Delete confirmation modal state.
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
-  const workoutImage = workout?.imageKey ? getExerciseImage(workout.imageKey) : null;
+  // Use the updated image helper so the screen supports BOTH:
+  // 1. built-in imageKey
+  // 2. remote imageUri
+  const workoutImage = getExerciseImage(workout?.imageKey, workout?.imageUri);
 
   const openDeleteModal = () => {
     setDeleteModalVisible(true);
@@ -45,18 +54,20 @@ const WorkoutDetailScreen = ({ route, navigation }) => {
   };
 
   const handleStartEdit = () => {
-    // Reset edit fields to current saved values before entering edit mode.
+    // Reset edit fields to the currently saved values.
     setEditedTitle(workout?.title || "");
     setEditedDescription(workout?.description || "");
     setEditedCategory(workout?.category || "");
+    setEditedStatus(workout?.status || (workout?.completed ? "Done" : "To Do"));
     setIsEditing(true);
   };
 
   const handleCancelEdit = () => {
-    // Restore the text fields to last saved values.
+    // Restore text fields and status to the last saved values.
     setEditedTitle(workout?.title || "");
     setEditedDescription(workout?.description || "");
     setEditedCategory(workout?.category || "");
+    setEditedStatus(workout?.status || (workout?.completed ? "Done" : "To Do"));
     setIsEditing(false);
   };
 
@@ -74,6 +85,12 @@ const WorkoutDetailScreen = ({ route, navigation }) => {
         title: editedTitle.trim(),
         description: editedDescription.trim(),
         category: editedCategory.trim(),
+
+        // Save the new 3-state status value.
+        status: editedStatus,
+
+        // Keep completed for backward compatibility with older app logic.
+        completed: editedStatus === "Done",
       };
 
       await updateWorkout(updatedWorkout);
@@ -110,13 +127,11 @@ const WorkoutDetailScreen = ({ route, navigation }) => {
         <Text style={detailStyles.header}>Workout Details</Text>
 
         <View style={detailStyles.card}>
-          {workoutImage ? (
-            <Image
-              source={workoutImage}
-              resizeMode="contain"
-              style={detailStyles.image}
-            />
-          ) : null}
+          <Image
+            source={workoutImage}
+            resizeMode="contain"
+            style={detailStyles.image}
+          />
 
           <Text style={detailStyles.label}>Title</Text>
           {isEditing ? (
@@ -162,9 +177,68 @@ const WorkoutDetailScreen = ({ route, navigation }) => {
           )}
 
           <Text style={detailStyles.label}>Status</Text>
-          <Text style={detailStyles.value}>
-            {workout?.completed ? "Done" : "To Do"}
-          </Text>
+          {isEditing ? (
+            <View style={detailStyles.statusContainer}>
+              <TouchableOpacity
+                style={[
+                  detailStyles.statusButton,
+                  editedStatus === "To Do" && detailStyles.statusButtonActive,
+                ]}
+                onPress={() => setEditedStatus("To Do")}
+              >
+                <Text
+                  style={[
+                    detailStyles.statusButtonText,
+                    editedStatus === "To Do" &&
+                      detailStyles.statusButtonTextActive,
+                  ]}
+                >
+                  To Do
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  detailStyles.statusButton,
+                  editedStatus === "Started" &&
+                    detailStyles.statusButtonActive,
+                ]}
+                onPress={() => setEditedStatus("Started")}
+              >
+                <Text
+                  style={[
+                    detailStyles.statusButtonText,
+                    editedStatus === "Started" &&
+                      detailStyles.statusButtonTextActive,
+                  ]}
+                >
+                  Started
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  detailStyles.statusButton,
+                  editedStatus === "Done" && detailStyles.statusButtonActive,
+                ]}
+                onPress={() => setEditedStatus("Done")}
+              >
+                <Text
+                  style={[
+                    detailStyles.statusButtonText,
+                    editedStatus === "Done" &&
+                      detailStyles.statusButtonTextActive,
+                  ]}
+                >
+                  Done
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <Text style={detailStyles.value}>
+              {workout?.status || (workout?.completed ? "Done" : "To Do")}
+            </Text>
+          )}
 
           <Text style={detailStyles.label}>Workout ID</Text>
           <Text style={detailStyles.value}>
@@ -172,7 +246,6 @@ const WorkoutDetailScreen = ({ route, navigation }) => {
           </Text>
         </View>
 
-        {/* Action buttons row */}
         <View style={detailStyles.iconButtonRow}>
           {!isEditing ? (
             <TouchableOpacity

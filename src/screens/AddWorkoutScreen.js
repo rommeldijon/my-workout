@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   Image,
   StyleSheet,
 } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 
 import workoutStyles from "../styles/workoutStyles";
 import { showAlert } from "../utils/alertHelper";
@@ -15,8 +16,8 @@ import { isEmpty } from "../utils/validators";
 import { addWorkout } from "../services/storageService";
 import { getExerciseImage } from "../constants/images";
 
-// Built-in image choices for the user.
-// The value must match the imageKey used in your images.js file.
+// Built-in image choices shown inside the custom dropdown.
+// The value must match the imageKey inside your images.js file.
 const IMAGE_OPTIONS = [
   { label: "Arms", value: "arms" },
   { label: "Legs", value: "legs" },
@@ -25,30 +26,57 @@ const IMAGE_OPTIONS = [
   { label: "Cardio", value: "cardio" },
 ];
 
-// Small helper function to validate image URLs.
-// This accepts common web image formats and standard http/https links.
+// Three workout progress choices.
+// We use a segmented slider-style selector instead of plain buttons.
+const STATUS_OPTIONS = ["To Do", "Started", "Done"];
+
+// Validate standard http/https image URLs.
+// Empty is allowed because the image URL is optional.
 const isValidImageUrl = (url) => {
   const trimmedUrl = url.trim();
 
   if (!trimmedUrl) {
-    return true; // Empty is allowed because URL input is optional.
+    return true;
   }
 
-  return /^https?:\/\/.+/i.test(trimmedUrl);
+  const isHttpUrl = /^https?:\/\/.+/i.test(trimmedUrl);
+  const isGoogleDriveUrl =
+    trimmedUrl.includes("drive.google.com") ||
+    trimmedUrl.includes("docs.google.com");
+
+  if (!isHttpUrl) {
+    return false;
+  }
+
+  if (isGoogleDriveUrl) {
+    return false;
+  }
+
+  return true;
 };
 
 const AddWorkoutScreen = ({ navigation }) => {
-  // Form fields
+  // Main form fields
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
+
+  // New 3-state status
   const [status, setStatus] = useState("To Do");
 
-  // New image-related fields
+  // Image-related fields
   const [selectedImageKey, setSelectedImageKey] = useState("");
   const [imageUri, setImageUri] = useState("");
 
-  // Validate all required fields before saving.
+  // Controls whether the image dropdown is open
+  const [showImageDropdown, setShowImageDropdown] = useState(false);
+
+  // Get the selected image object for display in the closed dropdown
+  const selectedImageOption = useMemo(() => {
+    return IMAGE_OPTIONS.find((option) => option.value === selectedImageKey) || null;
+  }, [selectedImageKey]);
+
+  // Validate all required fields before saving
   const validateForm = () => {
     if (isEmpty(title) || isEmpty(description) || isEmpty(category)) {
       showAlert("Validation Error", "Please fill in all required fields.");
@@ -66,11 +94,11 @@ const AddWorkoutScreen = ({ navigation }) => {
     return true;
   };
 
-  // Save the workout to AsyncStorage.
+  // Save the workout to storage
   // Priority:
-  // 1. If the user enters an image URL, save it.
-  // 2. If the user selects a built-in image, save its imageKey.
-  // 3. If both are empty, the workout can still be saved without an image.
+  // 1. Save imageUri if provided
+  // 2. Save selected built-in imageKey if chosen
+  // 3. Allow no image if the user leaves both empty
   const handleSaveWorkout = async () => {
     if (!validateForm()) {
       return;
@@ -84,7 +112,14 @@ const AddWorkoutScreen = ({ navigation }) => {
         title: title.trim(),
         description: description.trim(),
         category: category.trim(),
+
+        // Keep old completed logic for backward compatibility
         completed: status === "Done",
+
+        // Save the more detailed status so you can use it later in the UI
+        status,
+
+        // Save both built-in and URI image sources
         imageKey: selectedImageKey || "",
         imageUri: trimmedImageUri || "",
       };
@@ -100,8 +135,17 @@ const AddWorkoutScreen = ({ navigation }) => {
     }
   };
 
+  // Clear the built-in image choice
+  const handleClearImageSelection = () => {
+    setSelectedImageKey("");
+    setShowImageDropdown(false);
+  };
+
   return (
-    <ScrollView contentContainerStyle={workoutStyles.formContainer}>
+    <ScrollView
+      contentContainerStyle={workoutStyles.formContainer}
+      keyboardShouldPersistTaps="handled"
+    >
       <Text style={workoutStyles.formTitle}>Add Workout</Text>
 
       <Text style={workoutStyles.formLabel}>Workout Title</Text>
@@ -133,79 +177,113 @@ const AddWorkoutScreen = ({ navigation }) => {
         onChangeText={setCategory}
       />
 
-      <Text style={workoutStyles.formLabel}>Status</Text>
-      <View style={workoutStyles.statusContainer}>
-        <TouchableOpacity
-          style={[
-            workoutStyles.statusButton,
-            status === "To Do" && workoutStyles.statusButtonActive,
-          ]}
-          onPress={() => setStatus("To Do")}
-        >
-          <Text
-            style={[
-              workoutStyles.statusButtonText,
-              status === "To Do" && workoutStyles.statusButtonTextActive,
-            ]}
-          >
-            To Do
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[
-            workoutStyles.statusButton,
-            status === "Done" && workoutStyles.statusButtonActive,
-          ]}
-          onPress={() => setStatus("Done")}
-        >
-          <Text
-            style={[
-              workoutStyles.statusButtonText,
-              status === "Done" && workoutStyles.statusButtonTextActive,
-            ]}
-          >
-            Done
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      <Text style={workoutStyles.formLabel}>Choose a Built-in Image</Text>
+      <Text style={workoutStyles.formLabel}>Workout Progress</Text>
       <Text style={styles.helperText}>
-        Tap one of the built-in images below. This is optional.
+        Choose the current progress of this workout.
       </Text>
 
-      <View style={styles.imageGrid}>
-        {IMAGE_OPTIONS.map((option) => {
-          const isSelected = selectedImageKey === option.value;
+      <View style={styles.segmentContainer}>
+        {STATUS_OPTIONS.map((option) => {
+          const isSelected = status === option;
 
           return (
             <TouchableOpacity
-              key={option.value}
-              style={[styles.imageCard, isSelected && styles.imageCardSelected]}
-              onPress={() => setSelectedImageKey(option.value)}
+              key={option}
+              style={[
+                styles.segmentButton,
+                isSelected && styles.segmentButtonActive,
+              ]}
+              onPress={() => setStatus(option)}
             >
-              <Image
-                source={getExerciseImage(option.value)}
-                style={styles.imagePreview}
-                resizeMode="contain"
-              />
               <Text
                 style={[
-                  styles.imageLabel,
-                  isSelected && styles.imageLabelSelected,
+                  styles.segmentButtonText,
+                  isSelected && styles.segmentButtonTextActive,
                 ]}
               >
-                {option.label}
+                {option}
               </Text>
             </TouchableOpacity>
           );
         })}
       </View>
 
+      <Text style={workoutStyles.formLabel}>Built-in Image</Text>
+      <Text style={styles.helperText}>
+        Optional. Pick one built-in image now and update it later if needed.
+      </Text>
+
+      {/* Custom dropdown trigger */}
+      <TouchableOpacity
+        style={styles.dropdownButton}
+        onPress={() => setShowImageDropdown((prev) => !prev)}
+      >
+        <View style={styles.dropdownContent}>
+          {selectedImageOption ? (
+            <>
+              <Image
+                source={getExerciseImage(selectedImageOption.value)}
+                style={styles.dropdownImage}
+                resizeMode="contain"
+              />
+              <Text style={styles.dropdownButtonText}>
+                {selectedImageOption.label}
+              </Text>
+            </>
+          ) : (
+            <Text style={styles.dropdownPlaceholderText}>
+              Select a built-in image
+            </Text>
+          )}
+        </View>
+
+        <MaterialIcons
+          name={showImageDropdown ? "keyboard-arrow-up" : "keyboard-arrow-down"}
+          size={24}
+          color="#444"
+        />
+      </TouchableOpacity>
+
+      {/* Dropdown options */}
+      {showImageDropdown && (
+        <View style={styles.dropdownList}>
+          {IMAGE_OPTIONS.map((option) => {
+            const isSelected = selectedImageKey === option.value;
+
+            return (
+              <TouchableOpacity
+                key={option.value}
+                style={[
+                  styles.dropdownItem,
+                  isSelected && styles.dropdownItemSelected,
+                ]}
+                onPress={() => {
+                  setSelectedImageKey(option.value);
+                  setShowImageDropdown(false);
+                }}
+              >
+                <Image
+                  source={getExerciseImage(option.value)}
+                  style={styles.dropdownItemImage}
+                  resizeMode="contain"
+                />
+                <Text
+                  style={[
+                    styles.dropdownItemText,
+                    isSelected && styles.dropdownItemTextSelected,
+                  ]}
+                >
+                  {option.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      )}
+
       <TouchableOpacity
         style={styles.clearSelectionButton}
-        onPress={() => setSelectedImageKey("")}
+        onPress={handleClearImageSelection}
       >
         <Text style={styles.clearSelectionText}>Clear Built-in Selection</Text>
       </TouchableOpacity>
@@ -222,23 +300,27 @@ const AddWorkoutScreen = ({ navigation }) => {
       />
 
       <Text style={styles.helperText}>
-        Optional: paste an image URL. If you enter a URL, your app can use it
-        later as the workout image.
+        Optional. Paste an image URL of your workout. 
       </Text>
 
-      <TouchableOpacity
-        style={workoutStyles.saveButton}
-        onPress={handleSaveWorkout}
-      >
-        <Text style={workoutStyles.saveButtonText}>Save Workout</Text>
-      </TouchableOpacity>
+      {/* Icon action buttons */}
+      <View style={styles.iconButtonRow}>
+        <TouchableOpacity
+          style={[styles.iconButton, styles.saveIconButton]}
+          onPress={handleSaveWorkout}
+        >
+          <MaterialIcons name="save" size={24} color="#FFFFFF" />
+          <Text style={styles.iconButtonText}>Save</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity
-        style={workoutStyles.cancelButton}
-        onPress={() => navigation.goBack()}
-      >
-        <Text style={workoutStyles.cancelButtonText}>Cancel</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.iconButton, styles.cancelIconButton]}
+          onPress={() => navigation.goBack()}
+        >
+          <MaterialIcons name="close" size={24} color="#FFFFFF" />
+          <Text style={styles.iconButtonText}>Cancel</Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 };
@@ -251,41 +333,99 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     lineHeight: 18,
   },
-  imageGrid: {
+
+  // Segmented slider-style status selector
+  segmentContainer: {
     flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    marginBottom: 10,
+    backgroundColor: "#E9EEF5",
+    borderRadius: 12,
+    padding: 4,
+    marginBottom: 20,
   },
-  imageCard: {
-    width: "48%",
+  segmentButton: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  segmentButtonActive: {
+    backgroundColor: "#4A90E2",
+  },
+  segmentButtonText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#444",
+  },
+  segmentButtonTextActive: {
+    color: "#FFFFFF",
+  },
+
+  // Custom dropdown styles
+  dropdownButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     backgroundColor: "#FFFFFF",
     borderWidth: 1,
     borderColor: "#DDD",
     borderRadius: 12,
-    padding: 10,
-    marginBottom: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    marginBottom: 10,
+  },
+  dropdownContent: {
+    flexDirection: "row",
     alignItems: "center",
+    flex: 1,
   },
-  imageCardSelected: {
-    borderColor: "#4A90E2",
-    borderWidth: 2,
+  dropdownImage: {
+    width: 38,
+    height: 38,
+    marginRight: 12,
   },
-  imagePreview: {
-    width: 90,
-    height: 90,
-    marginBottom: 8,
-  },
-  imageLabel: {
-    fontSize: 14,
-    color: "#333",
-    textAlign: "center",
+  dropdownButtonText: {
+    fontSize: 15,
+    color: "#222",
     fontWeight: "500",
   },
-  imageLabelSelected: {
+  dropdownPlaceholderText: {
+    fontSize: 15,
+    color: "#888",
+  },
+  dropdownList: {
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#DDD",
+    borderRadius: 12,
+    marginBottom: 10,
+    overflow: "hidden",
+  },
+  dropdownItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#F0F0F0",
+  },
+  dropdownItemSelected: {
+    backgroundColor: "#EEF5FF",
+  },
+  dropdownItemImage: {
+    width: 34,
+    height: 34,
+    marginRight: 12,
+  },
+  dropdownItemText: {
+    fontSize: 15,
+    color: "#333",
+  },
+  dropdownItemTextSelected: {
     color: "#4A90E2",
     fontWeight: "700",
   },
+
   clearSelectionButton: {
     alignSelf: "flex-start",
     marginBottom: 16,
@@ -294,6 +434,34 @@ const styles = StyleSheet.create({
     color: "#D9534F",
     fontSize: 14,
     fontWeight: "600",
+  },
+
+  // Icon buttons
+  iconButtonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
+    gap: 12,
+  },
+  iconButton: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 14,
+    borderRadius: 12,
+  },
+  saveIconButton: {
+    backgroundColor: "#4A90E2",
+  },
+  cancelIconButton: {
+    backgroundColor: "#D9534F",
+  },
+  iconButtonText: {
+    color: "#FFFFFF",
+    fontSize: 15,
+    fontWeight: "700",
+    marginLeft: 8,
   },
 });
 

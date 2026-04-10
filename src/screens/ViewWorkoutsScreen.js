@@ -39,7 +39,9 @@ const ViewWorkoutsScreen = ({ navigation }) => {
         description: workout.description,
         category: workout.category,
         completed: workout.completed,
-        imageKey: workout.imageKey || null,
+        status: workout.status || (workout.completed ? "Done" : "To Do"),
+        imageKey: workout.imageKey || "",
+        imageUri: workout.imageUri || "",
       },
     });
   };
@@ -64,6 +66,12 @@ const ViewWorkoutsScreen = ({ navigation }) => {
         title: updatedWorkout.title.trim(),
         description: updatedWorkout.description?.trim() || "",
         category: updatedWorkout.category?.trim() || "",
+        status:
+          updatedWorkout.status ||
+          (updatedWorkout.completed ? "Done" : "To Do"),
+        completed:
+          (updatedWorkout.status ||
+            (updatedWorkout.completed ? "Done" : "To Do")) === "Done",
       };
 
       await updateWorkout(cleanedWorkout);
