@@ -5,3 +5,4 @@ export const isValidEmail = (email) => {
 export const isEmpty = (value) => {
   return !value || !value.trim();
 };
+
