@@ -14,8 +14,7 @@ export const exerciseImages = {
   core: require("../../assets/exercises/core.png"),
   cardio: require("../../assets/exercises/cardio.png"),
 
-  // Default fallback image (IMPORTANT)
-  // Make sure this file exists in your assets folder
+  // Default fallback image
   default: require("../../assets/exercises/default.png"),
 };
 
@@ -37,7 +36,7 @@ export const appImages = {
 export const getExerciseImage = (imageKey, imageUri) => {
   // PRIORITY 1: Use remote image if available
   if (imageUri && imageUri.trim() !== "") {
-    return { uri: imageUri };
+    return { uri: imageUri.trim() };
   }
 
   // PRIORITY 2: Use local image if key exists

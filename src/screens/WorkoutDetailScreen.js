@@ -31,8 +31,11 @@ const WorkoutDetailScreen = ({ route, navigation }) => {
   );
   const [editedCategory, setEditedCategory] = useState(item?.category || "");
 
+  // Editable image URL field.
+  const [editedImageUri, setEditedImageUri] = useState(item?.imageUri || "");
+
   // Editable status field.
-  // Supports the new 3-state flow: To Do, Started, Done.
+  // Supports the 3-state flow: To Do, Started, Done.
   const [editedStatus, setEditedStatus] = useState(
     item?.status || (item?.completed ? "Done" : "To Do")
   );
@@ -40,10 +43,40 @@ const WorkoutDetailScreen = ({ route, navigation }) => {
   // Delete confirmation modal state.
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
-  // Use the updated image helper so the screen supports BOTH:
-  // 1. built-in imageKey
-  // 2. remote imageUri
-  const workoutImage = getExerciseImage(workout?.imageKey, workout?.imageUri);
+  // Simple image URL validation.
+  // Blank is allowed because the user may want to keep/remove a custom image URL.
+  const isValidImageUrl = (url) => {
+    const trimmedUrl = url.trim();
+
+    if (!trimmedUrl) return true;
+
+    const isHttp = /^https?:\/\/.+/i.test(trimmedUrl);
+
+    const isImage =
+      /\.(jpg|jpeg|png|webp|gif)$/i.test(trimmedUrl) ||
+      trimmedUrl.includes("unsplash.com") ||
+      trimmedUrl.includes("images");
+
+    return isHttp && isImage;
+  };
+
+  // Helper to choose which image to display.
+  // While editing, we want the live typed image URL preview to show immediately.
+  const resolveWorkoutImage = () => {
+    const activeImageUri = isEditing
+      ? editedImageUri.trim()
+      : workout?.imageUri?.trim();
+
+    // If a valid remote image URL exists, use it first.
+    if (activeImageUri) {
+      return { uri: activeImageUri };
+    }
+
+    // Otherwise, fall back to the built-in imageKey image.
+    return getExerciseImage(workout?.imageKey);
+  };
+
+  const workoutImage = resolveWorkoutImage();
 
   const openDeleteModal = () => {
     setDeleteModalVisible(true);
@@ -58,15 +91,17 @@ const WorkoutDetailScreen = ({ route, navigation }) => {
     setEditedTitle(workout?.title || "");
     setEditedDescription(workout?.description || "");
     setEditedCategory(workout?.category || "");
+    setEditedImageUri(workout?.imageUri || "");
     setEditedStatus(workout?.status || (workout?.completed ? "Done" : "To Do"));
     setIsEditing(true);
   };
 
   const handleCancelEdit = () => {
-    // Restore text fields and status to the last saved values.
+    // Restore all fields to the last saved values.
     setEditedTitle(workout?.title || "");
     setEditedDescription(workout?.description || "");
     setEditedCategory(workout?.category || "");
+    setEditedImageUri(workout?.imageUri || "");
     setEditedStatus(workout?.status || (workout?.completed ? "Done" : "To Do"));
     setIsEditing(false);
   };
@@ -80,13 +115,22 @@ const WorkoutDetailScreen = ({ route, navigation }) => {
         return;
       }
 
+      if (!isValidImageUrl(editedImageUri)) {
+        showAlert(
+          "Validation Error",
+          "Please enter a valid image URL that starts with http or https."
+        );
+        return;
+      }
+
       const updatedWorkout = {
         ...workout,
         title: editedTitle.trim(),
         description: editedDescription.trim(),
         category: editedCategory.trim(),
+        imageUri: editedImageUri.trim(),
 
-        // Save the new 3-state status value.
+        // Save the selected 3-state status value.
         status: editedStatus,
 
         // Keep completed for backward compatibility with older app logic.
@@ -173,6 +217,22 @@ const WorkoutDetailScreen = ({ route, navigation }) => {
           ) : (
             <Text style={detailStyles.value}>
               {workout?.category || "No category"}
+            </Text>
+          )}
+
+          <Text style={detailStyles.label}>Image URL</Text>
+          {isEditing ? (
+            <TextInput
+              value={editedImageUri}
+              onChangeText={setEditedImageUri}
+              style={detailStyles.input}
+              placeholder="Enter image URL"
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+          ) : (
+            <Text style={detailStyles.value}>
+              {workout?.imageUri || "No custom image URL"}
             </Text>
           )}
 
